@@ -6,7 +6,7 @@
 /*   By: lmedrano <lmedrano@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 15:46:26 by lmedrano          #+#    #+#             */
-/*   Updated: 2024/07/09 16:43:28 by lmedrano         ###   ########.fr       */
+/*   Updated: 2024/07/10 10:42:46 by lmedrano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,12 @@ class BitCoinExchange
 
     		// Copy Assignment Operator
     		BitCoinExchange& operator=(const BitCoinExchange& copy);
+
+		//METHODS
+		static void	checkDate(std::multimap<std::string, std::string> BitCoinLine);
+		static void	checkBtc(std::multimap<std::string, std::string> BitCoinLine);
+		void		exchangeBtc(std::multimap<std::string, std::string> BitCoinLine, std::multimap<std::string, std::string> ExchangeRate);
+		void		previousDate(std::multimap<std::string, std::string> BitCoinLine, std::multimap<std::string, std::string> ExchangeRate);
 };
 
 #endif /* BitCoinExchange_HPP */

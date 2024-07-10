@@ -6,7 +6,7 @@
 /*   By: lmedrano <lmedrano@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 15:44:37 by lmedrano          #+#    #+#             */
-/*   Updated: 2024/07/09 16:47:40 by lmedrano         ###   ########.fr       */
+/*   Updated: 2024/07/10 10:42:30 by lmedrano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,19 +41,23 @@ int main(int ac, char **av)
 			{
 				std::string key = line.substr(0, pipePos);
 				std::string value = line.substr(pipePos + 1);
-				bitCoinLine.insert(std::make_pair(key,value));
+				if (bitCoinLine.insert(std::make_pair(key,value)) == bitCoinLine.end())
+					std::cout <<  RED << "FORMAT ERROR: MISSING A KEY OR A VALUE" << RESET << std::endl;
+				else
+					std::cout << GREEN << "SUCCESSFUL PAIRING" << RESET << std::endl;
 			}
 			else
-			{
-				//throw error?
-				std::cerr << RED << "ERROR: No pipe!" << RESET << std::endl;
-			}
+			std::cout <<  RED << "FORMAT ERROR: MISSING A KEY OR A VALUE" << RESET << std::endl;
 		}
 		std::cout << GREEN << "PRINTING MAP CONTAINER" << RESET << std::endl;
+		if (bitCoinLine.empty())
+			std::cerr << RED << "ERROR: Multimap is empty!" << RESET << std::endl;
 		for (std::multimap<std::string, std::string>::iterator iter = bitCoinLine.begin(); iter != bitCoinLine.end(); iter++)
 		{
-			std::cout << iter->first << " -> " << iter->second << std::endl;
+				std::cout << iter->first << " -> " << iter->second << std::endl;
 		}
+		BitCoinExchange::checkDate(bitCoinLine);
+		BitCoinExchange::checkBtc(bitCoinLine);
 		input.close();
 		//MY FILE
 		//store date(key) + bitcoin(value) value in <map>
