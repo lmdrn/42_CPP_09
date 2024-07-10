@@ -78,17 +78,38 @@ bool	checkDigit(const std::string& str)
 	return (true);
 }
 
+double strToDouble(const std::string& str)
+{
+	std::istringstream iss(str);
+	double value;
+	iss >> value;
+	if (iss.fail())
+		std::cerr << "Invalid argument for stod" << std::endl;
+	return (value);
+}
+
+int strToInt(const std::string& str)
+{
+	std::istringstream iss(str);
+	int	value;
+	iss >> value;
+	if (iss.fail())
+		std::cerr << "Invalid argument for stoi" << std::endl;
+	return (value);
+}
+
 bool	checkIntMinMax(const std::string& str)
 {
-	double value = std::stod(str);
+	double value = strToDouble(str);
 	if (value < INT_MIN || value > INT_MAX)
 		return (false);
 	return (true);
 }
 
+
 bool checkNeg(const std::string& str)
 {
-	double value = std::stod(str);
+	double value = strToDouble(str);
 	if (value < 0)
 		return (false);
 	return (true);
@@ -123,7 +144,7 @@ int	customStoi(const std::string &str)
 	}
 	else
 	{
-		int convertInt = stoi(str);
+		int convertInt = strToInt(str);
 		return (convertInt);
 	}
 	return (0);

@@ -13,10 +13,14 @@
 #ifndef BitCoinExchange_HPP
 # define BitCoinExchange_HPP
 
-#include <iostream>
 #include <string>
-#include <fstream>
 #include <map>
+#include <iostream>
+#include <climits>
+#include <fstream>
+#include <sstream>
+#include <algorithm>
+#include <stdexcept>
 
 #define RESET "\x1b[0m"
 #define GREEN "\x1b[32m"

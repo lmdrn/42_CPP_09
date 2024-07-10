@@ -27,7 +27,7 @@ int main(int ac, char **av)
 		if (infile.substr(infile.find_last_of(".") + 1) == "txt")
 			std::cout << GREEN << "SUCCESS! Correct Extension" << RESET << std::endl;
 		else
-		std::cout << RED << "ERROR: Wrong extension" << RESET << std::endl;
+			std::cout << RED << "ERROR: Wrong extension" << RESET << std::endl;
 		// create container map
 		std::multimap<std::string, std::string> bitcoinline;
 		// check file line by line
