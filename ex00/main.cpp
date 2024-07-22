@@ -67,38 +67,37 @@ int main(int ac, char **av)
 		for (std::string line2; getline(input2, line2);)
 		{
 			line2.erase(std::remove(line2.begin(), line2.end(), ' '), line2.end());
-			std::cout << PURPLE << line2 << RESET << std::endl;
+			//std::cout << PURPLE << line2 << RESET << std::endl;
 			std::size_t pipepos = line2.find(',');
 			if (pipepos != std::string::npos)
 			{
 				std::string key = line2.substr(0, pipepos);
 				std::string value = line2.substr(pipepos + 1);
 				if (exchangeline.insert(std::make_pair(key,value)) == exchangeline.end())
-					std::cout << RED << "format error: missing a key or a value" << RESET << std::endl;
+				{
+					//std::cout << RED << "format error: missing a key or a value" << RESET << std::endl;
+				}
 				else
-					std::cout << GREEN << "successful pairing" << RESET << std::endl;
+				{
+					//std::cout << GREEN << "successful pairing" << RESET << std::endl;
+				}
 			}
 			else
-			std::cout << RED << "format error: missing a key or a value" << RESET << std::endl;
+			{
+				//std::cout << RED << "format error: missing a key or a value" << RESET << std::endl;
+			}
 		}
 		std::cout << GREEN << "printing map container" << RESET << std::endl;
 		if (exchangeline.empty())
 			std::cerr << RED << "error: multimap is empty!" << RESET << std::endl;
 		for (std::multimap<std::string, std::string>::iterator iter = exchangeline.begin(); iter != exchangeline.end(); iter++)
 		{
-				std::cout << iter->first << " -> " << iter->second << std::endl;
+			//	std::cout << iter->first << " -> " << iter->second << std::endl;
 		}
-		BitCoinExchange::checkDate(exchangeline);
-		BitCoinExchange::checkBtc(exchangeline);
+		//BitCoinExchange::checkDate(exchangeline);
+		//BitCoinExchange::checkBtc(exchangeline);
 		input2.close();
-		//MY FILE
-		//store date(key) + bitcoin(value) value in <map>
-		//check date
-		//check bitcoin
-		//SAME FOR FILE FROM SUBJECT
-		//if dte OK but exist in SUBJECT FILE BUT NOT MINE
-		//USE PREVIOUS CLOSEST DATE
-		//Then compare both keys and multiply value x exchange rate
+		BitCoinExchange::exchangeBtc(bitcoinline, exchangeline);
 	}
 	return (0);
 }

@@ -49,7 +49,7 @@ class BitCoinExchange
 		//METHODS
 		static void	checkDate(std::multimap<std::string, std::string> BitCoinLine);
 		static void	checkBtc(std::multimap<std::string, std::string> BitCoinLine);
-		void		exchangeBtc(std::multimap<std::string, std::string> BitCoinLine, std::multimap<std::string, std::string> ExchangeRate);
+		static void	exchangeBtc(std::multimap<std::string, std::string> BitCoinLine, std::multimap<std::string, std::string> ExchangeRate);
 		void		previousDate(std::multimap<std::string, std::string> BitCoinLine, std::multimap<std::string, std::string> ExchangeRate);
 };
 

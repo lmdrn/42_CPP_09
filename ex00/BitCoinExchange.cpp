@@ -157,8 +157,47 @@ void	BitCoinExchange::checkBtc(std::multimap<std::string, std::string> BitCoinLi
 		int btc = customStoi(iter->second);
 		if (btc >= 0 && btc <= 100)
 		{
-			std::cout << ORANGE << "Btc is: " << iter->second << RESET << std::endl;
-			std::cout << GREEN <<  "Iz OK" << RESET << std::endl;
+		//	std::cout << ORANGE << "Btc is: " << iter->second << RESET << std::endl;
+		//	std::cout << GREEN <<  "Iz OK" << RESET << std::endl;
 		}
+	}
+}
+
+void		BitCoinExchange::exchangeBtc(std::multimap<std::string, std::string> BitCoinLine, std::multimap<std::string, std::string> ExchangeRate)
+{
+	std::multimap<std::string, std::string>::iterator iter1 = BitCoinLine.begin();
+	std::multimap<std::string, std::string>::iterator iter2 = ExchangeRate.begin();
+	while(iter1 != BitCoinLine.end() && iter2 != ExchangeRate.end())
+	{
+		if (iter1->first == iter2->first)
+		{
+			std::cout << GREEN << "Found similar date" << RESET << std::endl;
+			int btcValue = strToInt(iter1->second);
+			int exRate = strToInt(iter2->second);
+			int res = btcValue * exRate;
+			std::cout << GREEN << res << RESET << std::endl;
+		}
+		else if (iter1->first < iter2->first)
+		{
+			std::cout << "coucou2" << std::endl;
+			iter1++;
+		}
+		else
+		{
+			std::cout << "coucou3" << std::endl;
+			iter2++;
+		}
+		iter1++;
+		iter2++;
+	}
+	while (iter1 != BitCoinLine.end())
+	{
+		std::cout << "coucou4" << std::endl;
+		iter1++;
+	}
+	while (iter2 != ExchangeRate.end())
+	{
+		std::cout << "coucou5" << std::endl;
+		iter2++;
 	}
 }
