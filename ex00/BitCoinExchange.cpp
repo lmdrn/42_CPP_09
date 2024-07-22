@@ -6,15 +6,40 @@
 /*   By: lmedrano <lmedrano@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 15:46:33 by lmedrano          #+#    #+#             */
-/*   Updated: 2024/07/10 11:25:01 by lmedrano         ###   ########.fr       */
+/*   Updated: 2024/07/22 15:15:55 by lmedrano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "BitCoinExchange.hpp"
 
-// Constructor
-BitCoinExchange::BitCoinExchange()
-{}
+// Constructor with params
+BitCoinExchange::BitCoinExchange(const std::string file)
+{
+	std::ifstream	infile(file);
+	if (!infile.good())
+	{
+		std::cerr << RED << "ERROR: Could not open file" << RESET << std::endl;
+	}
+	int index = 0;
+	for (std::string line; getline(infile, line);)
+	{
+		std::size_t comma = line.find(',');
+		if (comma != std::string::npos)
+			createMap(line, comma);
+		else
+			std::cout << RED << "ERROR: Wrong format" << RESET << std::endl;
+		index++;
+	}
+	std::cout << index << std::endl;
+	if (_bitcoins.empty())
+	{
+		infile.close();
+		std::cerr << RED << "ERROR: Empty CSV" << RESET << std::endl;
+	}
+	printMap();
+	std::cout << _bitcoins.size() << std::endl;
+	infile.close();
+}
 
 // Destructor
 BitCoinExchange::~BitCoinExchange()
@@ -34,22 +59,50 @@ BitCoinExchange& BitCoinExchange::operator=(const BitCoinExchange& copy)
 	return (*this);
 }
 
-void	BitCoinExchange::checkDate(std::multimap<std::string, std::string> BitCoinLine)
+void	BitCoinExchange::createMap(std::string line, std::size_t symbol)
 {
-	for (std::multimap<std::string, std::string>::iterator iter = BitCoinLine.begin(); iter != BitCoinLine.end(); iter++)
+	std::string key = line.substr(0, symbol);
+	std::string value = line.substr(symbol + 1);
+
+	std::istringstream iss(value);
+	float newVal;
+	if (!(iss >> newVal))
+	{
+		std::cerr << RED << "ERROR: not a float" << RESET << std::endl;
+		return ;
+	}
+
+	if (!_bitcoins.insert(std::make_pair(key, newVal)).second && key != "date")
+	{
+		std::cout << RED << "ERROR: Missing a key or a value" << RESET << std::endl;
+		std::cout << key << ", " << newVal << std::endl;
+	}
+	else
+	{
+		std::cout << GREEN << "SUCCESS: successful pairing" << RESET << std::endl;
+		std::cout << key << ", " << value << std::endl;
+	}
+}
+
+int	BitCoinExchange::checkDate(std::map<std::string, float> BitCoinLine)
+{
+	for (std::map<std::string, float>::iterator iter = BitCoinLine.begin(); iter != BitCoinLine.end(); iter++)
 	{
 		struct tm tm;
 		if (strptime(iter->first.c_str(), "%Y-%m-%d", &tm))
 		{
 			std::cout << ORANGE << "Date is: " << iter->first << RESET << std::endl;
 			std::cout << GREEN << "SUCCESS : Date valid " << RESET << std::endl;
+			return (0);
 		}
 		else
 		{
 			std::cout << ORANGE << "Date is: " << iter->first << RESET << std::endl;
 			std::cout << RED << "ERROR : Date unvalid " << RESET << std::endl;
+			return (-1);
 		}
 	}
+	return (-1);
 }
 
 bool	checkDigit(const std::string& str)
@@ -115,89 +168,17 @@ bool checkNeg(const std::string& str)
 	return (true);
 }
 
-
-int	customStoi(const std::string &str)
+int	BitCoinExchange::checkBtc(std::map<std::string, float> BitCoinLine)
 {
-	if (str.empty())
-	{
-		std::cout << str << std::endl;
-		std::cerr << RED << "ERROR: Empty string" << RESET << std::endl; 
-		return (-1);
-	}
-	if (!checkDigit(str))
-	{
-		std::cout << str << std::endl;
-		std::cerr << RED << "ERROR: Not a digit" << RESET << std::endl; 
-		return (-1);
-	}
-	if (!checkIntMinMax(str))
-	{
-		std::cout << str << std::endl;
-		std::cerr << RED << "ERROR: Int min or max" << RESET << std::endl; 
-		return (-1);
-	}
-	if (!checkNeg(str))
-	{
-		std::cout << str << std::endl;
-		std::cerr << RED << "ERROR: Value is negative" << RESET << std::endl; 
-		return (-1);
-	}
-	else
-	{
-		int convertInt = strToInt(str);
-		return (convertInt);
-	}
+	(void)BitCoinLine;
 	return (0);
 }
 
-void	BitCoinExchange::checkBtc(std::multimap<std::string, std::string> BitCoinLine)
+void		BitCoinExchange::printMap(void)
 {
-	for (std::multimap<std::string, std::string>::iterator iter = BitCoinLine.begin(); iter != BitCoinLine.end(); iter++)
+	std::cout << "PRINTING MAP X DEBUG" << std::endl;
+	for (std::map<std::string, float>::iterator iter = _bitcoins.begin(); iter != _bitcoins.end(); iter++)
 	{
-		int btc = customStoi(iter->second);
-		if (btc >= 0 && btc <= 100)
-		{
-		//	std::cout << ORANGE << "Btc is: " << iter->second << RESET << std::endl;
-		//	std::cout << GREEN <<  "Iz OK" << RESET << std::endl;
-		}
-	}
-}
-
-void		BitCoinExchange::exchangeBtc(std::multimap<std::string, std::string> BitCoinLine, std::multimap<std::string, std::string> ExchangeRate)
-{
-	std::multimap<std::string, std::string>::iterator iter1 = BitCoinLine.begin();
-	std::multimap<std::string, std::string>::iterator iter2 = ExchangeRate.begin();
-	while(iter1 != BitCoinLine.end() && iter2 != ExchangeRate.end())
-	{
-		if (iter1->first == iter2->first)
-		{
-			std::cout << GREEN << "Found similar date" << RESET << std::endl;
-			int btcValue = strToInt(iter1->second);
-			int exRate = strToInt(iter2->second);
-			int res = btcValue * exRate;
-			std::cout << GREEN << res << RESET << std::endl;
-		}
-		else if (iter1->first < iter2->first)
-		{
-			std::cout << "coucou2" << std::endl;
-			iter1++;
-		}
-		else
-		{
-			std::cout << "coucou3" << std::endl;
-			iter2++;
-		}
-		iter1++;
-		iter2++;
-	}
-	while (iter1 != BitCoinLine.end())
-	{
-		std::cout << "coucou4" << std::endl;
-		iter1++;
-	}
-	while (iter2 != ExchangeRate.end())
-	{
-		std::cout << "coucou5" << std::endl;
-		iter2++;
+			std::cout << iter->first << " -> " << iter->second << std::endl;
 	}
 }
