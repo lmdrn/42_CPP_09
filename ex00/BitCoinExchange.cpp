@@ -6,7 +6,7 @@
 /*   By: lmedrano <lmedrano@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 15:46:33 by lmedrano          #+#    #+#             */
-/*   Updated: 2024/07/22 15:15:55 by lmedrano         ###   ########.fr       */
+/*   Updated: 2024/07/23 10:45:35 by lmedrano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ BitCoinExchange::BitCoinExchange(const std::string file)
 	std::ifstream	infile(file);
 	if (!infile.good())
 	{
-		std::cerr << RED << "ERROR: Could not open file" << RESET << std::endl;
+		std::cerr << RED << "ERROR: Could not open file." << RESET << std::endl;
 	}
 	int index = 0;
 	for (std::string line; getline(infile, line);)
@@ -26,18 +26,16 @@ BitCoinExchange::BitCoinExchange(const std::string file)
 		std::size_t comma = line.find(',');
 		if (comma != std::string::npos)
 			createMap(line, comma);
-		else
-			std::cout << RED << "ERROR: Wrong format" << RESET << std::endl;
 		index++;
 	}
 	std::cout << index << std::endl;
 	if (_bitcoins.empty())
 	{
 		infile.close();
-		std::cerr << RED << "ERROR: Empty CSV" << RESET << std::endl;
+		std::cerr << RED << "ERROR: Empty CSV." << RESET << std::endl;
 	}
-	printMap();
-	std::cout << _bitcoins.size() << std::endl;
+	//printMap();
+	//std::cout << _bitcoins.size() << std::endl;
 	infile.close();
 }
 
@@ -59,20 +57,88 @@ BitCoinExchange& BitCoinExchange::operator=(const BitCoinExchange& copy)
 	return (*this);
 }
 
+//TIPS:
+//Year is leap year if % 4
+//If also %100 and %400 Leap year
+//If only %100 not leap year
+bool	isLeapYear(int year)
+{
+	if (year % 4 == 0)
+	{
+		if (year % 100 == 0)
+		{
+			if (year % 400 == 0)
+				return (true);
+			else
+				return (false);
+		}
+		else
+			return (true);
+	}
+	else
+		return (false);
+}
+
+int	is30or31(int year, int month)
+{
+	if (month == 2)
+		return (isLeapYear(year) ? 29 : 28);
+	else if (month == 4 || month == 6 || month == 9 || month == 11)
+		return (30);
+	else
+		return (31);
+}
+
+int	BitCoinExchange::checkDate(const std::string &key)
+{
+	struct tm tm;
+	if (strptime(key.c_str(), "%Y-%m-%d", &tm))
+	{
+		int year = tm.tm_year + 1900;
+		if (year < 1900 | year > 2024)
+		{
+			std::cout << RED << "ERROR: bad input => " << key << RESET << std::endl;
+			return (-1);
+		}
+		int month = tm.tm_mon + 1;
+		if (month < 1 || month > 12)
+		{
+			std::cout << RED << "ERROR: bad input =>" << key << RESET << std::endl;
+			return (-1);
+		}
+		int day = tm.tm_mday;
+		int maxDays = is30or31(year, month);
+		if (day < 1 || day > maxDays)
+		{
+			std::cout << RED << "ERROR: bad input => " << key << RESET << std::endl;
+			return (-1);
+		}
+		return (0);
+	}
+	else
+	{
+		std::cout << RED << "ERROR : bad input => " << key << RESET << std::endl;
+		return (-1);
+	}
+	return (-1);
+}
+
 void	BitCoinExchange::createMap(std::string line, std::size_t symbol)
 {
 	std::string key = line.substr(0, symbol);
 	std::string value = line.substr(symbol + 1);
 
+	checkDate(key);
+	checkDigit
 	std::istringstream iss(value);
 	float newVal;
-	if (!(iss >> newVal))
+	if (!(iss >> newVal) || key == "date")
 	{
-		std::cerr << RED << "ERROR: not a float" << RESET << std::endl;
+		std::cerr << RED << "ERROR: bad input => " << newVal << RESET << std::endl;
 		return ;
 	}
 
-	if (!_bitcoins.insert(std::make_pair(key, newVal)).second && key != "date")
+	if (!_bitcoins.insert(std::make_pair(key, newVal)).second)
 	{
 		std::cout << RED << "ERROR: Missing a key or a value" << RESET << std::endl;
 		std::cout << key << ", " << newVal << std::endl;
@@ -82,27 +148,6 @@ void	BitCoinExchange::createMap(std::string line, std::size_t symbol)
 		std::cout << GREEN << "SUCCESS: successful pairing" << RESET << std::endl;
 		std::cout << key << ", " << value << std::endl;
 	}
-}
-
-int	BitCoinExchange::checkDate(std::map<std::string, float> BitCoinLine)
-{
-	for (std::map<std::string, float>::iterator iter = BitCoinLine.begin(); iter != BitCoinLine.end(); iter++)
-	{
-		struct tm tm;
-		if (strptime(iter->first.c_str(), "%Y-%m-%d", &tm))
-		{
-			std::cout << ORANGE << "Date is: " << iter->first << RESET << std::endl;
-			std::cout << GREEN << "SUCCESS : Date valid " << RESET << std::endl;
-			return (0);
-		}
-		else
-		{
-			std::cout << ORANGE << "Date is: " << iter->first << RESET << std::endl;
-			std::cout << RED << "ERROR : Date unvalid " << RESET << std::endl;
-			return (-1);
-		}
-	}
-	return (-1);
 }
 
 bool	checkDigit(const std::string& str)
