@@ -6,7 +6,7 @@
 /*   By: lmedrano <lmedrano@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 15:46:33 by lmedrano          #+#    #+#             */
-/*   Updated: 2024/07/23 11:52:53 by lmedrano         ###   ########.fr       */
+/*   Updated: 2024/07/23 12:22:29 by lmedrano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,26 +16,22 @@
 BitCoinExchange::BitCoinExchange(const std::string file)
 {
 	std::ifstream	infile(file);
-	if (!infile.good())
+	if (!infile.is_open())
 	{
 		std::cerr << RED << "ERROR: Could not open file." << RESET << std::endl;
 	}
-	int index = 0;
 	for (std::string line; getline(infile, line);)
 	{
 		std::size_t comma = line.find(',');
 		if (comma != std::string::npos)
 			createMap(line, comma);
-		index++;
 	}
-	std::cout << index << std::endl;
 	if (_bitcoins.empty())
 	{
 		infile.close();
 		std::cerr << RED << "ERROR: Empty CSV." << RESET << std::endl;
 	}
 	//printMap();
-	//std::cout << _bitcoins.size() << std::endl;
 	infile.close();
 }
 
@@ -130,7 +126,7 @@ int	BitCoinExchange::checkDigit(const std::string& value)
 	float	newVal = std::atof(value.c_str());
 	if (newVal < 0)
 	{
-		std::cerr << RED << "ERROR: not a postive numbe.r" << RESET << std::endl;
+		std::cerr << RED << "ERROR: not a postive number." << RESET << std::endl;
 		return (-1);
 	}
 	if (newVal > 1000)
@@ -146,8 +142,10 @@ void	BitCoinExchange::createMap(std::string line, std::size_t symbol)
 	std::string key = line.substr(0, symbol);
 	std::string value = line.substr(symbol + 1);
 
-	//checkDate(key);
-	//checkDigit(value);
+	if (line == "date,exchange_rate")
+	{
+		return ;
+	}
 	std::istringstream iss(value);
 	float newVal;
 	if (!(iss >> newVal) || key == "date")
@@ -164,4 +162,53 @@ void	BitCoinExchange::createMap(std::string line, std::size_t symbol)
 	{
 			std::cout << GREEN << key << " => " << newVal << RESET << std::endl;
 	}
+}
+
+float	BitCoinExchange::findCorrectDate(const std::string& date)
+{
+	std::map<std::string, float>::iterator iter = _bitcoins.find(date);
+
+	if (iter == _bitcoins.end())
+	{
+		iter = _bitcoins.upper_bound(date);
+		if (iter != _bitcoins.begin())
+			iter--;
+	}
+	return (iter->second);
+}
+
+void	BitCoinExchange::exchangeBtc(const std::string& fileArg)
+{
+	std::ifstream	infile(fileArg);
+	if (!infile.is_open())
+	{
+		infile.close();
+		std::cerr << RED << "ERROR: Could not open file." << RESET << std::endl;
+	}
+	if (infile.peek() == std::ifstream::traits_type::eof())
+	{
+		infile.close();
+		std::cerr << RED << "ERROR: Empty CSV." << RESET << std::endl;
+	}
+	for (std::string line; getline(infile, line);)
+	{
+		if (line == "date | value")
+			continue ;
+		std::size_t pipe = line.find('|');
+		if (pipe != std::string::npos)
+		{
+			std::string key = line.substr(0, pipe);
+			std::string value = line.substr(pipe + 1);
+			if (checkDate(key) != -1 && checkDigit(value) != -1)
+			{
+				float	checkDate = findCorrectDate(key);	
+				float	checkDigit = std::atof(value.c_str());	
+				float	ret = checkDate * checkDigit;
+				std::cout << GREEN << key << " => " << value << " = " << ret << RESET << std::endl;
+			}
+		}
+		else
+			std::cerr << RED << "ERROR: Bad format." << RESET << std::endl;
+	}
+	infile.close();
 }

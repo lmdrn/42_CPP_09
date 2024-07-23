@@ -6,7 +6,7 @@
 /*   By: lmedrano <lmedrano@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 15:46:26 by lmedrano          #+#    #+#             */
-/*   Updated: 2024/07/23 11:49:29 by lmedrano         ###   ########.fr       */
+/*   Updated: 2024/07/23 12:10:20 by lmedrano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,9 +48,11 @@ class BitCoinExchange
     		BitCoinExchange& operator=(const BitCoinExchange& copy);
 
 		//METHODS
+		void	createMap(std::string line, std::size_t symbol);
 		int	checkDate(const std::string& key);
 		int	checkDigit(const std::string& value);
-		void	createMap(std::string line, std::size_t symbol);
+		float	findCorrectDate(const std::string& date);
+		void	exchangeBtc(const std::string& fileArg);
 };
 
 #endif /* BitCoinExchange_HPP */
