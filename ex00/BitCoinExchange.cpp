@@ -6,7 +6,7 @@
 /*   By: lmedrano <lmedrano@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 15:46:33 by lmedrano          #+#    #+#             */
-/*   Updated: 2024/07/23 10:45:35 by lmedrano         ###   ########.fr       */
+/*   Updated: 2024/07/23 11:52:53 by lmedrano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,30 +97,48 @@ int	BitCoinExchange::checkDate(const std::string &key)
 		int year = tm.tm_year + 1900;
 		if (year < 1900 | year > 2024)
 		{
-			std::cout << RED << "ERROR: bad input => " << key << RESET << std::endl;
+			std::cerr << RED << "ERROR: bad input => " << key << RESET << std::endl;
 			return (-1);
 		}
 		int month = tm.tm_mon + 1;
 		if (month < 1 || month > 12)
 		{
-			std::cout << RED << "ERROR: bad input =>" << key << RESET << std::endl;
+			std::cerr << RED << "ERROR: bad input =>" << key << RESET << std::endl;
 			return (-1);
 		}
 		int day = tm.tm_mday;
 		int maxDays = is30or31(year, month);
 		if (day < 1 || day > maxDays)
 		{
-			std::cout << RED << "ERROR: bad input => " << key << RESET << std::endl;
+			std::cerr << RED << "ERROR: bad input => " << key << RESET << std::endl;
 			return (-1);
 		}
 		return (0);
 	}
 	else
 	{
-		std::cout << RED << "ERROR : bad input => " << key << RESET << std::endl;
+		std::cerr << RED << "ERROR : bad input => " << key << RESET << std::endl;
 		return (-1);
 	}
-	return (-1);
+	return (0);
+}
+
+int	BitCoinExchange::checkDigit(const std::string& value)
+{
+	if (value.empty())
+		return (-1);
+	float	newVal = std::atof(value.c_str());
+	if (newVal < 0)
+	{
+		std::cerr << RED << "ERROR: not a postive numbe.r" << RESET << std::endl;
+		return (-1);
+	}
+	if (newVal > 1000)
+	{
+		std::cerr << RED << "ERROR: too large a number." << RESET << std::endl;
+		return (-1);
+	}
+	return (0);
 }
 
 void	BitCoinExchange::createMap(std::string line, std::size_t symbol)
@@ -128,8 +146,8 @@ void	BitCoinExchange::createMap(std::string line, std::size_t symbol)
 	std::string key = line.substr(0, symbol);
 	std::string value = line.substr(symbol + 1);
 
-	checkDate(key);
-	checkDigit
+	//checkDate(key);
+	//checkDigit(value);
 	std::istringstream iss(value);
 	float newVal;
 	if (!(iss >> newVal) || key == "date")
@@ -140,90 +158,10 @@ void	BitCoinExchange::createMap(std::string line, std::size_t symbol)
 
 	if (!_bitcoins.insert(std::make_pair(key, newVal)).second)
 	{
-		std::cout << RED << "ERROR: Missing a key or a value" << RESET << std::endl;
-		std::cout << key << ", " << newVal << std::endl;
+		std::cout << RED << "ERROR: bad input => " << newVal << RESET << std::endl;
 	}
 	else
 	{
-		std::cout << GREEN << "SUCCESS: successful pairing" << RESET << std::endl;
-		std::cout << key << ", " << value << std::endl;
-	}
-}
-
-bool	checkDigit(const std::string& str)
-{
-	if (str.empty())
-		return (false);
-	size_t	start = 0;
-	bool	isFloat = 0;
-	if (str[0] == '-')
-	{
-		if (str.length() == 1)
-			return (false);
-		start = 1;
-	}
-	for (size_t i = start; i < str.length(); i++)
-	{
-		if (str[i] == '.')
-		{
-			if (isFloat)
-				return (false);
-			isFloat = true;
-		}
-		else if (!isdigit(str[i]))
-			return (false);
-	}
-	return (true);
-}
-
-double strToDouble(const std::string& str)
-{
-	std::istringstream iss(str);
-	double value;
-	iss >> value;
-	if (iss.fail())
-		std::cerr << "Invalid argument for stod" << std::endl;
-	return (value);
-}
-
-int strToInt(const std::string& str)
-{
-	std::istringstream iss(str);
-	int	value;
-	iss >> value;
-	if (iss.fail())
-		std::cerr << "Invalid argument for stoi" << std::endl;
-	return (value);
-}
-
-bool	checkIntMinMax(const std::string& str)
-{
-	double value = strToDouble(str);
-	if (value < INT_MIN || value > INT_MAX)
-		return (false);
-	return (true);
-}
-
-
-bool checkNeg(const std::string& str)
-{
-	double value = strToDouble(str);
-	if (value < 0)
-		return (false);
-	return (true);
-}
-
-int	BitCoinExchange::checkBtc(std::map<std::string, float> BitCoinLine)
-{
-	(void)BitCoinLine;
-	return (0);
-}
-
-void		BitCoinExchange::printMap(void)
-{
-	std::cout << "PRINTING MAP X DEBUG" << std::endl;
-	for (std::map<std::string, float>::iterator iter = _bitcoins.begin(); iter != _bitcoins.end(); iter++)
-	{
-			std::cout << iter->first << " -> " << iter->second << std::endl;
+			std::cout << GREEN << key << " => " << newVal << RESET << std::endl;
 	}
 }

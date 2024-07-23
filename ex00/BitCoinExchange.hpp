@@ -6,7 +6,7 @@
 /*   By: lmedrano <lmedrano@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 15:46:26 by lmedrano          #+#    #+#             */
-/*   Updated: 2024/07/23 10:37:09 by lmedrano         ###   ########.fr       */
+/*   Updated: 2024/07/23 11:49:29 by lmedrano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,9 +49,8 @@ class BitCoinExchange
 
 		//METHODS
 		int	checkDate(const std::string& key);
-		int	checkBtc(std::map<std::string, float> BitCoinLine);
+		int	checkDigit(const std::string& value);
 		void	createMap(std::string line, std::size_t symbol);
-		void	printMap(void);
 };
 
 #endif /* BitCoinExchange_HPP */
