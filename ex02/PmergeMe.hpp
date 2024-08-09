@@ -6,7 +6,7 @@
 /*   By: lmedrano <lmedrano@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/08 13:51:52 by lmedrano          #+#    #+#             */
-/*   Updated: 2024/08/08 13:54:13 by lmedrano         ###   ########.fr       */
+/*   Updated: 2024/08/09 14:24:26 by lmedrano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,10 @@
 
 #include <string>
 #include <iostream>
+#include <sstream>
+#include <cctype>
+#include <set>
+#include <limits>
 
 #define RESET "\x1b[0m"
 #define GREEN "\x1b[32m"
@@ -22,7 +26,7 @@
 #define RED "\x1b[31m"
 #define PURPLE "\x1b[35m"
 
-class	PMergMe
+class	PmergeMe
 {
 	private:
 	
