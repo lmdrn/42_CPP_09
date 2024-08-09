@@ -6,7 +6,7 @@
 /*   By: lmedrano <lmedrano@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/08 13:51:35 by lmedrano          #+#    #+#             */
-/*   Updated: 2024/08/09 14:22:45 by lmedrano         ###   ########.fr       */
+/*   Updated: 2024/08/09 18:11:45 by lmedrano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,14 +48,70 @@
 // Test avec 3000 int
 //
 
-PmergeMe::PmergeMe()
+PmergeMe::PmergeMe(int ac, char **av)
 {
-	std::cout << GREEN << "XX __ PmergeMe CREATED __ XX" << RESET << std::endl;
+	std::cout << ORANGE << "XX __ PmergeMe CREATED __ XX" << RESET << std::endl;
+
+	if (ac > 2)
+	{
+		std::set<int>		doublonChecker;
+		bool okay = true;
+		for (int i = 1; i < ac; i++)
+		{
+			std::string token = av[i];
+			if (checkNumber(av[i]) == false)
+			{
+				std::cerr << RED << "ERROR: Invalid Number! Insert a valid sequence" << RESET << std::endl;
+				exit(-1);
+			}
+			okay = checkUnique(token, doublonChecker);
+		}
+		if (okay == false)
+		{
+			std::cerr << RED << "ERROR: Doublons! Insert valid number sequence." << RESET << std::endl;
+			exit(-1);
+		}
+	}
+	else
+	{
+		if (itTakesTwo(av[1]) == false)
+		{
+			std::cerr << RED << "ERROR: Less than 2 elements or empty sequence" << RESET << std::endl;
+			exit(-1);
+		}
+		if (checkUniqueInStr(av[1]) == false)
+		{
+			std::cerr << RED << "ERROR: Doublons or Invalid number ! Insert valid number sequence." << RESET << std::endl;
+			exit(-1);
+		}
+	}
+
+	struct timeval start, end;
+	
+	gettimeofday(&start, NULL);
+	parsing(ac, av);
+	printVector();
+	gettimeofday(&end, NULL);
+	printElapsedTime(start, end);
+
+	gettimeofday(&start, NULL);
+	divideIntoPairs();
+	printPairs();
+	gettimeofday(&end, NULL);
+	printElapsedTime(start, end);
+
+	gettimeofday(&start, NULL);
+	insertSortedMinMax();
+	printPairs();
+	gettimeofday(&end, NULL);
+	printElapsedTime(start, end);
+
+	printTotalTime(start, end);
 }
 
 PmergeMe::~PmergeMe()
 {
-	std::cout << RED << "XX __ PmergeMe DESTROYED __ XX" << RESET << std::endl;
+	std::cout << ORANGE << "XX __ PmergeMe DESTROYED __ XX" << RESET << std::endl;
 }
 
 PmergeMe::PmergeMe(const PmergeMe& copy)
@@ -68,4 +124,163 @@ PmergeMe& PmergeMe::operator=(const PmergeMe& copy)
 	if (this != &copy)
 	{}
 	return (*this);
+}
+
+//methods
+void	PmergeMe::printElapsedTime(struct timeval start, struct timeval end) const
+{
+	long seconds = end.tv_sec - start.tv_sec;
+	long useconds = end.tv_usec - start.tv_usec;
+	double elapsed = seconds + useconds*1e-6;
+	std::cout << PURPLE << "Time spent: " << std::fixed << std::setprecision(6) << elapsed << " secs" << RESET << std::endl;
+}
+
+//not sure it's working
+void PmergeMe::printTotalTime(struct timeval start, struct timeval end) const {
+    // Calculate total elapsed time
+    long seconds  = end.tv_sec  - start.tv_sec;
+    long useconds = end.tv_usec - start.tv_usec;
+
+    // Adjust for negative microseconds
+    if (useconds < 0) {
+        seconds--;
+        useconds += 1000000;
+    }
+
+    double totalElapsed = seconds + useconds * 1e-6;
+
+    std::cout << "Total time spent: " << std::fixed << std::setprecision(6) << totalElapsed << " secs" << std::endl;
+}
+
+void	PmergeMe::printVector() const
+{
+	std::cout << GREEN << "TEST: Check vector created" << RESET << std::endl;
+	for (std::vector<int>::const_iterator iter = _sequence.begin(); iter != _sequence.end(); iter++)
+	{
+		std::cout << GREEN << "Item : " << *iter << RESET << std::endl;
+	}
+}
+
+void	PmergeMe::printPairs() const
+{
+	std::cout << GREEN << "TEST: Check freshly made pairing" << RESET << std::endl;
+	for (std::vector<std::pair<int, int> >::const_iterator iter = _pair.begin(); iter != _pair.end(); iter++)
+	{
+		std::cout << GREEN << "Pair is: " << iter->first << " , " << iter->second << RESET << std::endl;
+	}
+}
+
+bool PmergeMe::checkNumber(const std::string& args) const
+{
+	if (args.empty())
+		return (false);
+	for (size_t i = 0; i < args.size(); i++)
+	{
+		if (!std::isdigit(args[i]))
+			return (false);
+	}
+	long long nbr = std::atoll(args.c_str());
+	if (nbr < 0 || nbr > std::numeric_limits<int>::max())
+		return (false);
+	return (true);
+}
+
+bool	PmergeMe::checkUniqueInStr(const std::string& args) const
+{
+	std::istringstream	iss(args);
+	std::string		token;
+	std::set<int>		doublonChecker;
+
+	while (iss >> token)
+	{
+		if (!checkNumber(token))
+		{
+			return (false);
+		}
+		int nbr = std::atoi(token.c_str());
+		if (doublonChecker.find(nbr) != doublonChecker.end())
+		{
+			return (false);
+		}
+		doublonChecker.insert(nbr);
+	}
+	return (true);
+}
+
+bool PmergeMe::checkUnique(const std::string& args, std::set<int>& doublonChecker) const
+{
+	if (!checkNumber(args))
+		return (false);
+	int nbr = std::atoi(args.c_str());
+	if (doublonChecker.find(nbr) != doublonChecker.end())
+		return (false);
+	doublonChecker.insert(nbr);
+	return (true);
+}
+
+
+bool PmergeMe::itTakesTwo(const std::string& input) const
+{
+	std::istringstream iss(input);
+	std::string token;
+	int count = 0;
+
+	while (iss >> token)
+	{
+		if (checkNumber(token))
+		{
+			count++;
+			if (count >= 2)
+				return (true);
+		}
+	}
+	return (false);
+}
+
+void	PmergeMe::parsing(int ac, char **av)
+{
+	if (ac > 2)
+	{
+		for (int i = 1; i < ac; i++)
+		{
+			std::string	arg = av[i];
+			_sequence.push_back(std::atoi(arg.c_str()));
+		}
+	}
+	else if (ac == 2)
+	{
+		
+		std::string		arg = av[1];
+		std::istringstream	iss(arg);
+		std::string		token;
+		while (iss >> token)
+		{
+			_sequence.push_back(std::atoi(token.c_str()));
+		}
+	}
+}
+
+void	PmergeMe::divideIntoPairs()
+{
+	for (size_t i = 0; i + 1 < _sequence.size(); i += 2)
+	{
+		_pair.push_back(std::make_pair(_sequence[i], _sequence[i + 1]));
+	}
+	if (_sequence.size() % 2 != 0)
+	{
+		_pair.push_back(std::make_pair(_sequence.back(), -1));
+	}
+}
+
+std::pair<int, int>	PmergeMe::sortMinMaxPair(const std::pair<int, int>& pair) const
+{
+	if (pair.first > pair.second)
+		return (std::make_pair(pair.second, pair.first));
+	return (pair);
+}
+
+void	PmergeMe::insertSortedMinMax()
+{
+	for (std::vector<std::pair<int, int> >::iterator iter = _pair.begin(); iter != _pair.end(); iter++)
+		*iter = sortMinMaxPair(*iter);
 }

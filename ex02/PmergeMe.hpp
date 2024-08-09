@@ -6,7 +6,7 @@
 /*   By: lmedrano <lmedrano@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/08 13:51:52 by lmedrano          #+#    #+#             */
-/*   Updated: 2024/08/09 14:24:26 by lmedrano         ###   ########.fr       */
+/*   Updated: 2024/08/09 18:09:49 by lmedrano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,11 @@
 #include <cctype>
 #include <set>
 #include <limits>
+#include <vector>
+#include <cstdlib>
+#include <utility>
+#include <sys/time.h>
+#include <iomanip>
 
 #define RESET "\x1b[0m"
 #define GREEN "\x1b[32m"
@@ -29,12 +34,27 @@
 class	PmergeMe
 {
 	private:
+		std::vector<int> 			_sequence;
+		std::vector<std::pair<int, int> >	_pair;
+
+		void 					printElapsedTime(struct timeval start, struct timeval end) const;
+		void					printTotalTime(struct timeval start, struct timeval end) const;
+		bool					checkNumber(const std::string& args) const;
+		bool					checkUnique(const std::string& args, std::set<int>& doublonChecker) const;
+		bool					itTakesTwo(const std::string& input) const;
+		bool					checkUniqueInStr(const std::string& args) const;
+		void					parsing(int ac, char **av);	
+		void					divideIntoPairs();
+		std::pair<int, int>			sortMinMaxPair(const std::pair<int, int>& pair) const;
+		void					insertSortedMinMax();
 	
 	public:
-		PmergeMe();
+		PmergeMe(int ac, char **av);
 		~PmergeMe();
 		PmergeMe(const PmergeMe& copy);
 		PmergeMe& operator=(const PmergeMe& copy);
+		void printVector() const;
+		void printPairs() const;
 };
 
 #endif
