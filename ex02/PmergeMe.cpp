@@ -6,7 +6,7 @@
 /*   By: lmedrano <lmedrano@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/08 13:51:35 by lmedrano          #+#    #+#             */
-/*   Updated: 2024/08/09 18:11:45 by lmedrano         ###   ########.fr       */
+/*   Updated: 2024/08/09 18:38:57 by lmedrano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,6 +103,12 @@ PmergeMe::PmergeMe(int ac, char **av)
 	gettimeofday(&start, NULL);
 	insertSortedMinMax();
 	printPairs();
+	gettimeofday(&end, NULL);
+	printElapsedTime(start, end);
+
+	gettimeofday(&start, NULL);
+	maxArray();
+	insertMinInMaxArray();
 	gettimeofday(&end, NULL);
 	printElapsedTime(start, end);
 
@@ -283,4 +289,35 @@ void	PmergeMe::insertSortedMinMax()
 {
 	for (std::vector<std::pair<int, int> >::iterator iter = _pair.begin(); iter != _pair.end(); iter++)
 		*iter = sortMinMaxPair(*iter);
+}
+
+void	PmergeMe::maxArray()
+{
+	_max.clear();
+	for(std::vector<std::pair<int, int> >::iterator iter = _pair.begin(); iter != _pair.end(); iter++)
+		_max.push_back(std::max(iter->first, iter->second));
+}
+
+void	PmergeMe::insertMinInMaxArray()
+{
+	if (_pair.empty())
+		return ;
+	int smallestMax = std::numeric_limits<int>::max();
+	int min = std::numeric_limits<int>::min();
+	std::vector<std::pair<int, int> >::const_iterator iter;
+
+	for (iter = _pair.begin(); iter != _pair.end(); iter++)
+	{
+		int currentMax = std::max(iter->first, iter->second);
+		int currentMin = std::min(iter->first, iter->second);
+		if (currentMax < smallestMax)
+		{
+			smallestMax = currentMax;
+			min = currentMin;
+		}
+		else if (currentMax == smallestMax)
+			min = std::min(min, currentMin);
+	}
+	std::cout << ORANGE << "Min is: " << min << RESET << std::endl;
+	_max.insert(_max.begin(), min);
 }

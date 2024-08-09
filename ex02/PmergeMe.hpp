@@ -6,7 +6,7 @@
 /*   By: lmedrano <lmedrano@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/08 13:51:52 by lmedrano          #+#    #+#             */
-/*   Updated: 2024/08/09 18:09:49 by lmedrano         ###   ########.fr       */
+/*   Updated: 2024/08/09 18:21:46 by lmedrano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,8 @@ class	PmergeMe
 	private:
 		std::vector<int> 			_sequence;
 		std::vector<std::pair<int, int> >	_pair;
+		std::vector<int>			_max;
+		std::vector<int>			_min;
 
 		void 					printElapsedTime(struct timeval start, struct timeval end) const;
 		void					printTotalTime(struct timeval start, struct timeval end) const;
@@ -47,6 +49,9 @@ class	PmergeMe
 		void					divideIntoPairs();
 		std::pair<int, int>			sortMinMaxPair(const std::pair<int, int>& pair) const;
 		void					insertSortedMinMax();
+		void					maxArray();
+		void					insertMinInMaxArray();
+		void					minArray();
 	
 	public:
 		PmergeMe(int ac, char **av);
