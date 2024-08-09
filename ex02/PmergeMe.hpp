@@ -6,7 +6,7 @@
 /*   By: lmedrano <lmedrano@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/08 13:51:52 by lmedrano          #+#    #+#             */
-/*   Updated: 2024/08/09 18:21:46 by lmedrano         ###   ########.fr       */
+/*   Updated: 2024/08/09 18:43:35 by lmedrano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,8 @@ class	PmergeMe
 		PmergeMe& operator=(const PmergeMe& copy);
 		void printVector() const;
 		void printPairs() const;
+		void clearInitialVector();
+		void printMinMaxArrays();
 };
 
 #endif

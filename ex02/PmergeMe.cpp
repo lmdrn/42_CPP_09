@@ -6,7 +6,7 @@
 /*   By: lmedrano <lmedrano@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/08 13:51:35 by lmedrano          #+#    #+#             */
-/*   Updated: 2024/08/09 18:38:57 by lmedrano         ###   ########.fr       */
+/*   Updated: 2024/08/09 18:54:31 by lmedrano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,12 @@ PmergeMe::PmergeMe(int ac, char **av)
 	gettimeofday(&start, NULL);
 	maxArray();
 	insertMinInMaxArray();
+	gettimeofday(&end, NULL);
+	printElapsedTime(start, end);
+
+	gettimeofday(&start, NULL);
+	minArray();
+	printMinMaxArrays();
 	gettimeofday(&end, NULL);
 	printElapsedTime(start, end);
 
@@ -320,4 +326,40 @@ void	PmergeMe::insertMinInMaxArray()
 	}
 	std::cout << ORANGE << "Min is: " << min << RESET << std::endl;
 	_max.insert(_max.begin(), min);
+}
+
+void	PmergeMe::minArray()
+{
+	if (_pair.empty())	
+		return ;
+	std::vector<std::pair<int, int> >::const_iterator iter;
+	for (iter = _pair.begin(); iter != _pair.end(); iter++)
+	{
+		int min = std::min(iter->first, iter->second);
+		_min.push_back(min);
+	}
+}
+
+void	PmergeMe::clearInitialVector()
+{
+	_pair.clear();
+}
+
+// max values should be cleared from initial vector
+// so that you dont reuse it in min array
+// or like max value replaced by -1 so I know that I can put min value
+// inside min array
+// and I should also sort the max value array as I populate it
+// add to top or back if value is smaller or bigger than initial value.
+void	PmergeMe::printMinMaxArrays()
+{
+	std::cout << GREEN << "MAX ARRAY: ";
+	for (std::vector<int>::const_iterator iter = _max.begin(); iter != _max.end(); iter++)
+		std::cout << *iter << " ";
+	std::cout << RESET << std::endl;
+
+	std::cout << GREEN << "MIN ARRAY: "; 
+	for (std::vector<int>::const_iterator iter = _min.begin(); iter != _min.end(); iter++)
+		std::cout << *iter << " ";
+	std::cout << RESET << std::endl;
 }
