@@ -6,7 +6,7 @@
 /*   By: lmedrano <lmedrano@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/08 13:51:52 by lmedrano          #+#    #+#             */
-/*   Updated: 2024/08/10 14:47:03 by lmedrano         ###   ########.fr       */
+/*   Updated: 2024/08/10 17:10:31 by lmedrano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@
 #include <sys/time.h>
 #include <iomanip>
 #include <cmath>
+#include <algorithm>
+#include <iterator>
 
 #define RESET "\x1b[0m"
 #define GREEN "\x1b[32m"
@@ -56,6 +58,8 @@ class	PmergeMe
 		void					processMaxArray();
 		void					minArray();
 		void					groupMinArray();
+		bool					binarySearch(int val, std::vector<int>::const_iterator& pos);
+		void					processGroups();
 	
 	public:
 		PmergeMe(int ac, char **av);

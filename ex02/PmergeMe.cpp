@@ -6,7 +6,7 @@
 /*   By: lmedrano <lmedrano@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/08 13:51:35 by lmedrano          #+#    #+#             */
-/*   Updated: 2024/08/10 16:43:15 by lmedrano         ###   ########.fr       */
+/*   Updated: 2024/08/10 17:14:40 by lmedrano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,51 +89,35 @@ PmergeMe::PmergeMe(int ac, char **av)
 	struct timeval start, end;
 	
 	gettimeofday(&start, NULL);
+
 	parsing(ac, av);
 	printVector();
-	gettimeofday(&end, NULL);
-	printElapsedTime(start, end);
 
-	gettimeofday(&start, NULL);
 	divideIntoPairs();
 	printPairs();
-	gettimeofday(&end, NULL);
-	printElapsedTime(start, end);
 
-	gettimeofday(&start, NULL);
 	insertSortedMinMax();
 	printPairs();
-	gettimeofday(&end, NULL);
-	printElapsedTime(start, end);
 
-	gettimeofday(&start, NULL);
 	insertMinInMaxArray();
 	maxArray();
-	gettimeofday(&end, NULL);
-	printElapsedTime(start, end);
 
-	gettimeofday(&start, NULL);
 	minArray();
 	printMinMaxArrays();
-	gettimeofday(&end, NULL);
-	printElapsedTime(start, end);
 
-	gettimeofday(&start, NULL);
 	clearInitialVector();
 	std::cout << GREEN << "Print vector" << RESET << std::endl;
 	printVector();
 	std::cout << GREEN << "Print pairs" << RESET << std::endl;
 	printPairs();
-	gettimeofday(&end, NULL);
-	printElapsedTime(start, end);
 	
-	gettimeofday(&start, NULL);
 	groupMinArray();
 	printMinGrouped();
+
+	processGroups();
+
 	gettimeofday(&end, NULL);
 	printElapsedTime(start, end);
-
-	printTotalTime(start, end);
 }
 
 PmergeMe::~PmergeMe()
@@ -454,4 +438,62 @@ void PmergeMe::printContMin(const std::vector<int>& container) {
         std::cout << *iter << " ";
     }
     std::cout << std::endl;
+}
+
+bool PmergeMe::binarySearch(int val, std::vector<int>::const_iterator& pos)
+{
+	std::vector<int>::const_iterator left = _max.begin();
+	std::vector<int>::const_iterator right = _max.end();
+
+	while (left < right)
+	{
+		std::vector<int>::const_iterator mid = left + (right - left) / 2;
+		if (*mid == val)
+		{
+			pos = mid;
+			return (true);
+		}
+		else if (*mid < val)
+			left = mid + 1;
+		else
+			right = mid;
+	}
+	return (false);
+}
+
+int iteratorDistance(std::vector<int>::const_iterator begin, std::vector<int>::const_iterator end)
+{
+	int distance = 0;
+	while (begin != end)
+	{
+		begin++;
+		distance++;
+	}
+	return (distance);
+}
+
+void PmergeMe::processGroups()
+{
+	for(std::vector<std::vector<int> >::const_iterator gIter = _powerOfTwo.begin(); gIter != _powerOfTwo.end(); gIter++)
+	{
+		const std::vector<int>& group = *gIter;
+		for (std::vector<int>::const_reverse_iterator rIter = group.rbegin(); rIter != group.rend(); rIter++)
+		{
+			int val = *rIter;
+			if (val == -1)
+				continue ;
+			std::vector<int>::const_iterator pos;
+			if (binarySearch(val, pos))
+			{
+				int index = iteratorDistance(_max.begin(), pos); 
+				_max.insert(_max.begin() + index, val);
+			}
+		}
+	}
+	std::cout << PURPLE << "Updated maxArray SORTED: ";
+	for (std::vector<int>::const_iterator it = _max.begin(); it != _max.end(); ++it)
+	{
+		std::cout << *it << " ";
+	}
+	std::cout << RESET << std::endl;
 }
