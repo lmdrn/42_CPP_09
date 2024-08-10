@@ -6,7 +6,7 @@
 /*   By: lmedrano <lmedrano@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/08 13:51:35 by lmedrano          #+#    #+#             */
-/*   Updated: 2024/08/09 18:54:31 by lmedrano         ###   ########.fr       */
+/*   Updated: 2024/08/10 14:20:50 by lmedrano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,14 +107,23 @@ PmergeMe::PmergeMe(int ac, char **av)
 	printElapsedTime(start, end);
 
 	gettimeofday(&start, NULL);
-	maxArray();
 	insertMinInMaxArray();
+	maxArray();
 	gettimeofday(&end, NULL);
 	printElapsedTime(start, end);
 
 	gettimeofday(&start, NULL);
 	minArray();
 	printMinMaxArrays();
+	gettimeofday(&end, NULL);
+	printElapsedTime(start, end);
+
+	gettimeofday(&start, NULL);
+	clearInitialVector();
+	std::cout << GREEN << "Print vector" << RESET << std::endl;
+	printVector();
+	std::cout << GREEN << "Print pairs" << RESET << std::endl;
+	printPairs();
 	gettimeofday(&end, NULL);
 	printElapsedTime(start, end);
 
@@ -166,19 +175,29 @@ void PmergeMe::printTotalTime(struct timeval start, struct timeval end) const {
 
 void	PmergeMe::printVector() const
 {
-	std::cout << GREEN << "TEST: Check vector created" << RESET << std::endl;
-	for (std::vector<int>::const_iterator iter = _sequence.begin(); iter != _sequence.end(); iter++)
+	if (_sequence.empty())
+		std::cout << RED << "EMPTY VECTOR" << RESET << std::endl;
+	else
 	{
-		std::cout << GREEN << "Item : " << *iter << RESET << std::endl;
+		std::cout << GREEN << "TEST: Check vector created" << RESET << std::endl;
+		for (std::vector<int>::const_iterator iter = _sequence.begin(); iter != _sequence.end(); iter++)
+		{
+			std::cout << GREEN << "Item : " << *iter << RESET << std::endl;
+		}
 	}
 }
 
 void	PmergeMe::printPairs() const
 {
-	std::cout << GREEN << "TEST: Check freshly made pairing" << RESET << std::endl;
-	for (std::vector<std::pair<int, int> >::const_iterator iter = _pair.begin(); iter != _pair.end(); iter++)
+	if (_pair.empty())
+		std::cout << RED << "EMPTY PAIRS" << RESET << std::endl;
+	else
 	{
-		std::cout << GREEN << "Pair is: " << iter->first << " , " << iter->second << RESET << std::endl;
+		std::cout << GREEN << "TEST: Check freshly made pairing" << RESET << std::endl;
+		for (std::vector<std::pair<int, int> >::const_iterator iter = _pair.begin(); iter != _pair.end(); iter++)
+		{
+			std::cout << GREEN << "Pair is: " << iter->first << " , " << iter->second << RESET << std::endl;
+		}
 	}
 }
 
@@ -299,9 +318,27 @@ void	PmergeMe::insertSortedMinMax()
 
 void	PmergeMe::maxArray()
 {
-	_max.clear();
-	for(std::vector<std::pair<int, int> >::iterator iter = _pair.begin(); iter != _pair.end(); iter++)
-		_max.push_back(std::max(iter->first, iter->second));
+	while (true)
+	{
+		int smallestMax = std::numeric_limits<int>::max();
+		std::vector<std::pair<int, int> >::iterator pairIter = _pair.end();
+		
+		for (std::vector<std::pair<int, int> >::iterator iter = _pair.begin(); iter != _pair.end(); iter++)
+		{
+			int currentMax = iter->second;
+			if (currentMax == -1)
+				continue ;
+			if (currentMax < smallestMax)
+			{
+				smallestMax = currentMax;
+				pairIter = iter;
+			}
+		}
+		if (pairIter == _pair.end())
+			break ;
+		_max.push_back(smallestMax);
+		pairIter->second = -1;
+	}
 }
 
 void	PmergeMe::insertMinInMaxArray()
@@ -309,8 +346,9 @@ void	PmergeMe::insertMinInMaxArray()
 	if (_pair.empty())
 		return ;
 	int smallestMax = std::numeric_limits<int>::max();
-	int min = std::numeric_limits<int>::min();
-	std::vector<std::pair<int, int> >::const_iterator iter;
+	int min = std::numeric_limits<int>::max();
+	std::vector<std::pair<int, int> >::iterator pairIter;
+	std::vector<std::pair<int, int> >::iterator iter;
 
 	for (iter = _pair.begin(); iter != _pair.end(); iter++)
 	{
@@ -320,23 +358,30 @@ void	PmergeMe::insertMinInMaxArray()
 		{
 			smallestMax = currentMax;
 			min = currentMin;
+			pairIter = iter;
 		}
 		else if (currentMax == smallestMax)
-			min = std::min(min, currentMin);
+		{
+			if (currentMin < min)
+			{
+				min = std::min(min, currentMin);
+				pairIter = iter;
+			}
+		}
 	}
 	std::cout << ORANGE << "Min is: " << min << RESET << std::endl;
-	_max.insert(_max.begin(), min);
+	_max.push_back(min);
+	_max.push_back(smallestMax);
+	_pair.erase(pairIter);
 }
 
 void	PmergeMe::minArray()
 {
-	if (_pair.empty())	
-		return ;
 	std::vector<std::pair<int, int> >::const_iterator iter;
 	for (iter = _pair.begin(); iter != _pair.end(); iter++)
 	{
-		int min = std::min(iter->first, iter->second);
-		_min.push_back(min);
+		if (iter->first != -1)
+			_min.push_back(iter->first);
 	}
 }
 

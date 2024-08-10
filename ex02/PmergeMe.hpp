@@ -6,7 +6,7 @@
 /*   By: lmedrano <lmedrano@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/08 13:51:52 by lmedrano          #+#    #+#             */
-/*   Updated: 2024/08/09 18:43:35 by lmedrano         ###   ########.fr       */
+/*   Updated: 2024/08/10 13:37:46 by lmedrano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ class	PmergeMe
 		void					insertSortedMinMax();
 		void					maxArray();
 		void					insertMinInMaxArray();
+		void					processMaxArray();
 		void					minArray();
 	
 	public:
