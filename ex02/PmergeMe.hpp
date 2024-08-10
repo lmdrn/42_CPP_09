@@ -6,7 +6,7 @@
 /*   By: lmedrano <lmedrano@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/08 13:51:52 by lmedrano          #+#    #+#             */
-/*   Updated: 2024/08/10 13:37:46 by lmedrano         ###   ########.fr       */
+/*   Updated: 2024/08/10 14:47:03 by lmedrano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 #include <utility>
 #include <sys/time.h>
 #include <iomanip>
+#include <cmath>
 
 #define RESET "\x1b[0m"
 #define GREEN "\x1b[32m"
@@ -38,6 +39,7 @@ class	PmergeMe
 		std::vector<std::pair<int, int> >	_pair;
 		std::vector<int>			_max;
 		std::vector<int>			_min;
+		std::vector<std::vector<int> >		_powerOfTwo;
 
 		void 					printElapsedTime(struct timeval start, struct timeval end) const;
 		void					printTotalTime(struct timeval start, struct timeval end) const;
@@ -53,6 +55,7 @@ class	PmergeMe
 		void					insertMinInMaxArray();
 		void					processMaxArray();
 		void					minArray();
+		void					groupMinArray();
 	
 	public:
 		PmergeMe(int ac, char **av);
@@ -63,6 +66,8 @@ class	PmergeMe
 		void printPairs() const;
 		void clearInitialVector();
 		void printMinMaxArrays();
+		void printMinGrouped();
+		void printContMin(const std::vector<int>& container);
 };
 
 #endif

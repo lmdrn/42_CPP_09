@@ -6,7 +6,7 @@
 /*   By: lmedrano <lmedrano@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/08 13:51:35 by lmedrano          #+#    #+#             */
-/*   Updated: 2024/08/10 14:20:50 by lmedrano         ###   ########.fr       */
+/*   Updated: 2024/08/10 16:43:15 by lmedrano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,6 +124,12 @@ PmergeMe::PmergeMe(int ac, char **av)
 	printVector();
 	std::cout << GREEN << "Print pairs" << RESET << std::endl;
 	printPairs();
+	gettimeofday(&end, NULL);
+	printElapsedTime(start, end);
+	
+	gettimeofday(&start, NULL);
+	groupMinArray();
+	printMinGrouped();
 	gettimeofday(&end, NULL);
 	printElapsedTime(start, end);
 
@@ -390,12 +396,6 @@ void	PmergeMe::clearInitialVector()
 	_pair.clear();
 }
 
-// max values should be cleared from initial vector
-// so that you dont reuse it in min array
-// or like max value replaced by -1 so I know that I can put min value
-// inside min array
-// and I should also sort the max value array as I populate it
-// add to top or back if value is smaller or bigger than initial value.
 void	PmergeMe::printMinMaxArrays()
 {
 	std::cout << GREEN << "MAX ARRAY: ";
@@ -407,4 +407,51 @@ void	PmergeMe::printMinMaxArrays()
 	for (std::vector<int>::const_iterator iter = _min.begin(); iter != _min.end(); iter++)
 		std::cout << *iter << " ";
 	std::cout << RESET << std::endl;
+}
+
+void PmergeMe::groupMinArray()
+{
+	_powerOfTwo.clear();
+
+	std::vector<int>::iterator start = _min.begin();
+	std::vector<int>::iterator end = _min.end();
+	size_t	nextPowerOfTwo = 1;
+	size_t	prevGroupSize = 1;
+	size_t	groupSize = 1;
+	
+	while (start != end)
+	{
+		std::vector<int> currentGroup;
+		std::vector<int>::iterator groupEnd = start;
+		
+		std::advance(groupEnd, std::min(groupSize, static_cast<size_t>(std::distance(start, end))));
+		for (; start != groupEnd; start++)
+			currentGroup.push_back(*start);
+
+		if (currentGroup.size() < groupSize)
+		{
+			while (currentGroup.size() < groupSize)
+				currentGroup.push_back(-1);
+		}
+		_powerOfTwo.push_back(currentGroup);
+		nextPowerOfTwo *= 2;
+		prevGroupSize = currentGroup.size();
+		groupSize = nextPowerOfTwo - prevGroupSize;
+	}
+
+}
+
+void PmergeMe::printMinGrouped() {
+    std::cout << "GROUPED MIN ARRAY" << std::endl;
+    for (std::vector<std::vector<int> >::const_iterator gIter = _powerOfTwo.begin(); gIter != _powerOfTwo.end(); ++gIter) {
+        printContMin(*gIter);
+    }
+}
+
+void PmergeMe::printContMin(const std::vector<int>& container) {
+    std::cout << "Group: ";
+    for (std::vector<int>::const_iterator iter = container.begin(); iter != container.end(); ++iter) {
+        std::cout << *iter << " ";
+    }
+    std::cout << std::endl;
 }
