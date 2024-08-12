@@ -6,7 +6,7 @@
 /*   By: lmedrano <lmedrano@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/08 13:51:35 by lmedrano          #+#    #+#             */
-/*   Updated: 2024/08/10 17:14:40 by lmedrano         ###   ########.fr       */
+/*   Updated: 2024/08/12 11:55:53 by lmedrano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -344,7 +344,10 @@ void	PmergeMe::insertMinInMaxArray()
 	{
 		int currentMax = std::max(iter->first, iter->second);
 		int currentMin = std::min(iter->first, iter->second);
-		if (currentMax < smallestMax)
+
+		if (currentMin == -1 && currentMax == -1)
+			continue ;
+		if (currentMax < smallestMax && currentMin != -1)
 		{
 			smallestMax = currentMax;
 			min = currentMin;
@@ -352,7 +355,7 @@ void	PmergeMe::insertMinInMaxArray()
 		}
 		else if (currentMax == smallestMax)
 		{
-			if (currentMin < min)
+			if (currentMin < min && currentMin != -1)
 			{
 				min = std::min(min, currentMin);
 				pairIter = iter;
