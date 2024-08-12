@@ -6,7 +6,7 @@
 /*   By: lmedrano <lmedrano@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/08 13:51:35 by lmedrano          #+#    #+#             */
-/*   Updated: 2024/08/12 12:05:48 by lmedrano         ###   ########.fr       */
+/*   Updated: 2024/08/12 17:23:13 by lmedrano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,39 +85,6 @@ PmergeMe::PmergeMe(int ac, char **av)
 			exit(-1);
 		}
 	}
-
-	struct timeval start, end;
-	
-	gettimeofday(&start, NULL);
-
-	parsing(ac, av);
-	printVector();
-
-	divideIntoPairs();
-	printPairs();
-
-	insertSortedMinMax();
-	printPairs();
-
-	insertMinInMaxArray();
-	maxArray();
-
-	minArray();
-	printMinMaxArrays();
-
-	clearInitialVector();
-	std::cout << GREEN << "Print vector" << RESET << std::endl;
-	printVector();
-	std::cout << GREEN << "Print pairs" << RESET << std::endl;
-	printPairs();
-	
-	groupMinArray();
-	printMinGrouped();
-
-	processGroups();
-
-	gettimeofday(&end, NULL);
-	printElapsedTime(start, end);
 }
 
 PmergeMe::~PmergeMe()
@@ -146,44 +113,12 @@ void	PmergeMe::printElapsedTime(struct timeval start, struct timeval end) const
 	std::cout << PURPLE << "Time spent: " << std::fixed << std::setprecision(6) << elapsed << " secs" << RESET << std::endl;
 }
 
-//not sure it's working
-void PmergeMe::printTotalTime(struct timeval start, struct timeval end) const {
-    // Calculate total elapsed time
-    long seconds  = end.tv_sec  - start.tv_sec;
-    long useconds = end.tv_usec - start.tv_usec;
-
-    // Adjust for negative microseconds
-    if (useconds < 0) {
-        seconds--;
-        useconds += 1000000;
-    }
-
-    double totalElapsed = seconds + useconds * 1e-6;
-
-    std::cout << "Total time spent: " << std::fixed << std::setprecision(6) << totalElapsed << " secs" << std::endl;
-}
-
-void	PmergeMe::printVector() const
-{
-	if (_sequence.empty())
-		std::cout << RED << "EMPTY VECTOR" << RESET << std::endl;
-	else
-	{
-		std::cout << GREEN << "TEST: Check vector created" << RESET << std::endl;
-		for (std::vector<int>::const_iterator iter = _sequence.begin(); iter != _sequence.end(); iter++)
-		{
-			std::cout << GREEN << "Item : " << *iter << RESET << std::endl;
-		}
-	}
-}
-
 void	PmergeMe::printPairs() const
 {
 	if (_pair.empty())
 		std::cout << RED << "EMPTY PAIRS" << RESET << std::endl;
 	else
 	{
-		std::cout << GREEN << "TEST: Check freshly made pairing" << RESET << std::endl;
 		for (std::vector<std::pair<int, int> >::const_iterator iter = _pair.begin(); iter != _pair.end(); iter++)
 		{
 			std::cout << GREEN << "Pair is: " << iter->first << " , " << iter->second << RESET << std::endl;
@@ -258,6 +193,23 @@ bool PmergeMe::itTakesTwo(const std::string& input) const
 	return (false);
 }
 
+//GETTERS
+
+const std::vector<int>& PmergeMe::getSequence() const
+{
+	return (_sequence);
+}
+
+const std::vector<int>& PmergeMe::getMax() const
+{
+	return (_max);
+}
+
+const std::vector<int>& PmergeMe::getMin() const
+{
+	return (_min);
+}
+
 void	PmergeMe::parsing(int ac, char **av)
 {
 	if (ac > 2)
@@ -295,7 +247,7 @@ void	PmergeMe::divideIntoPairs()
 
 std::pair<int, int>	PmergeMe::sortMinMaxPair(const std::pair<int, int>& pair) const
 {
-	if (pair.first > pair.second)
+	if (pair.first > pair.second && pair.second != -1)
 		return (std::make_pair(pair.second, pair.first));
 	return (pair);
 }
@@ -362,7 +314,6 @@ void	PmergeMe::insertMinInMaxArray()
 			}
 		}
 	}
-	std::cout << ORANGE << "Min is: " << min << RESET << std::endl;
 	_max.push_back(min);
 	_max.push_back(smallestMax);
 	_pair.erase(pairIter);
@@ -385,12 +336,12 @@ void	PmergeMe::clearInitialVector()
 
 void	PmergeMe::printMinMaxArrays()
 {
-	std::cout << GREEN << "MAX ARRAY: ";
+	std::cout << "Max" << std::endl;
 	for (std::vector<int>::const_iterator iter = _max.begin(); iter != _max.end(); iter++)
 		std::cout << *iter << " ";
 	std::cout << RESET << std::endl;
 
-	std::cout << GREEN << "MIN ARRAY: "; 
+	std::cout << "Min" << std::endl;
 	for (std::vector<int>::const_iterator iter = _min.begin(); iter != _min.end(); iter++)
 		std::cout << *iter << " ";
 	std::cout << RESET << std::endl;
@@ -429,14 +380,12 @@ void PmergeMe::groupMinArray()
 }
 
 void PmergeMe::printMinGrouped() {
-    std::cout << "GROUPED MIN ARRAY" << std::endl;
     for (std::vector<std::vector<int> >::const_iterator gIter = _powerOfTwo.begin(); gIter != _powerOfTwo.end(); ++gIter) {
         printContMin(*gIter);
     }
 }
 
 void PmergeMe::printContMin(const std::vector<int>& container) {
-    std::cout << "Group: ";
     for (std::vector<int>::const_iterator iter = container.begin(); iter != container.end(); ++iter) {
         std::cout << *iter << " ";
     }
@@ -473,7 +422,7 @@ void PmergeMe::processGroups()
 			_max.insert(pos, val);
 		}
 	}
-	std::cout << PURPLE << "Updated maxArray SORTED: ";
+	std::cout << PURPLE << "After:   ";
 	for (std::vector<int>::const_iterator it = _max.begin(); it != _max.end(); ++it)
 	{
 		std::cout << *it << " ";
