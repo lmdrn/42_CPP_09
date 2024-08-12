@@ -6,7 +6,7 @@
 /*   By: lmedrano <lmedrano@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/08 13:51:52 by lmedrano          #+#    #+#             */
-/*   Updated: 2024/08/10 17:10:31 by lmedrano         ###   ########.fr       */
+/*   Updated: 2024/08/12 12:05:21 by lmedrano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ class	PmergeMe
 		void					processMaxArray();
 		void					minArray();
 		void					groupMinArray();
-		bool					binarySearch(int val, std::vector<int>::const_iterator& pos);
+		std::vector<int>::iterator		binarySearch(int val);
 		void					processGroups();
 	
 	public:

@@ -6,7 +6,7 @@
 /*   By: lmedrano <lmedrano@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/08 13:51:35 by lmedrano          #+#    #+#             */
-/*   Updated: 2024/08/12 11:55:53 by lmedrano         ###   ########.fr       */
+/*   Updated: 2024/08/12 12:05:48 by lmedrano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -443,36 +443,20 @@ void PmergeMe::printContMin(const std::vector<int>& container) {
     std::cout << std::endl;
 }
 
-bool PmergeMe::binarySearch(int val, std::vector<int>::const_iterator& pos)
+std::vector<int>::iterator PmergeMe::binarySearch(int val)
 {
-	std::vector<int>::const_iterator left = _max.begin();
-	std::vector<int>::const_iterator right = _max.end();
+	std::vector<int>::iterator left = _max.begin();
+	std::vector<int>::iterator right = _max.end();
 
 	while (left < right)
 	{
-		std::vector<int>::const_iterator mid = left + (right - left) / 2;
-		if (*mid == val)
-		{
-			pos = mid;
-			return (true);
-		}
-		else if (*mid < val)
+		std::vector<int>::iterator mid = left + (right - left) / 2;
+		if (*mid < val)
 			left = mid + 1;
 		else
 			right = mid;
 	}
-	return (false);
-}
-
-int iteratorDistance(std::vector<int>::const_iterator begin, std::vector<int>::const_iterator end)
-{
-	int distance = 0;
-	while (begin != end)
-	{
-		begin++;
-		distance++;
-	}
-	return (distance);
+	return (left);
 }
 
 void PmergeMe::processGroups()
@@ -485,12 +469,8 @@ void PmergeMe::processGroups()
 			int val = *rIter;
 			if (val == -1)
 				continue ;
-			std::vector<int>::const_iterator pos;
-			if (binarySearch(val, pos))
-			{
-				int index = iteratorDistance(_max.begin(), pos); 
-				_max.insert(_max.begin() + index, val);
-			}
+			std::vector<int>::iterator pos = binarySearch(val);
+			_max.insert(pos, val);
 		}
 	}
 	std::cout << PURPLE << "Updated maxArray SORTED: ";
