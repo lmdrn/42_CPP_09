@@ -104,10 +104,10 @@ class	PmergeMe
 		// FORD JOHNSON + BINARY SEARCH + INSERT MIN TO MAX ARRAY
 		template <typename ContPower, typename ContMin>
 		void 					groupMinArray(ContPower &power, ContMin &min, ContMin &currentGroup);
-		template <typename Container>
-		typename Container::iterator 		binarySearch(int val, Container &container);
 		void					processGroupsVec();
 		void					processGroupsList();
+		template <typename Container>
+		typename Container::iterator 		binarySearch(Container &container, int val);
 		template <typename ContPower, typename ContMax>
 		void					processGroups(ContPower &power, ContMax &max);
 
@@ -320,27 +320,6 @@ void PmergeMe::groupMinArray(ContPower &power, ContMin &min, ContMin &currentGro
 template <typename ContPower, typename ContMin>
 void groupMinArray(ContPower &power, ContMin &min, ContMin &currentGroup);
 
-template <typename Container>
-typename Container::iterator PmergeMe::binarySearch(int val, Container &container)
-{
-	typename Container::iterator left = container.begin();
-	typename Container::iterator right = container.end();
-
-	while (left < right)
-	{
-		typename Container::iterator mid = left + (right - left) / 2;
-		if (*mid < val)
-			left = mid + 1;
-		else
-			right = mid;
-	}
-	return (left);
-}
-
-template <typename Container>
-typename Container::iterator binarySearch(int val, Container &container);
-
-
 template <typename ContPower, typename ContMax>
 void PmergeMe::processGroups(ContPower &power, ContMax &max)
 {
@@ -353,7 +332,7 @@ void PmergeMe::processGroups(ContPower &power, ContMax &max)
 			int val = *rIter;
 			if (val == -1)
 				continue ;
-			typename ContMax::iterator pos = binarySearch(val, max);
+			typename ContMax::iterator pos = binarySearch(max, val);
 			max.insert(pos, val);
 		}
 	}
@@ -367,5 +346,26 @@ void PmergeMe::processGroups(ContPower &power, ContMax &max)
 
 template <typename ContPower, typename ContMax>
 void	processGroups(ContPower &power, ContMax &max);
+
+template <typename Container>
+typename Container::iterator PmergeMe::binarySearch(Container &container, int val)
+{
+    typename Container::iterator left = container.begin();
+    typename Container::iterator right = container.end();
+
+    while (left != right)
+    {
+        typename Container::iterator mid = left;
+        std::advance(mid, std::distance(left, right) / 2);
+        if (*mid < val)
+            left = ++mid;
+        else
+            right = mid;
+    }
+    return left;
+}
+
+template <typename Container>
+typename Container::iterator binarySearch(Container &container, int val);
 
 #endif
