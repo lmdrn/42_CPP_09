@@ -6,7 +6,7 @@
 /*   By: lmedrano <lmedrano@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 13:59:32 by lmedrano          #+#    #+#             */
-/*   Updated: 2024/08/12 17:24:19 by lmedrano         ###   ########.fr       */
+/*   Updated: 2024/08/13 18:27:35 by lmedrano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,24 +21,24 @@ int main(int ac, char **av)
 	}
 
 	std::cout << GREEN << "XX-------------------TEST WIH A VECTOR------------------XX" << RESET << std::endl;
-	PmergeMe pm(ac, av);
 
 	struct timeval start, end;
 	
 	gettimeofday(&start, NULL);
 
-	pm.parsing(ac, av);
-	std::cout << std::endl;
-	pm.printContainer(pm.getSequence());
+	PmergeMe pm(ac, av);
+	std::vector<int> sequence;
+	pm.parsing(ac, av, sequence);
 
-	pm.divideIntoPairs();
-	pm.insertSortedMinMax();
-	pm.insertMinInMaxArray();
-	pm.maxArray();
-	pm.minArray();
-	pm.clearInitialVector();
-	pm.groupMinArray();
-	pm.processGroups();
+	std::cout << std::endl;
+	pm.printContainer(sequence);
+
+	pm.divideIntoPairsVec(sequence);
+	pm.insertSortedMinMaxVec();
+	pm.FordJVec();
+	//pm.clearInitialVector();
+	//pm.groupMinArray();
+	//pm.processGroups();
 
 	gettimeofday(&end, NULL);
 	std::cout << std::endl;
@@ -46,5 +46,27 @@ int main(int ac, char **av)
 	std::cout << std::endl;
 	
 	std::cout << GREEN << "XX-------------------TEST WIH A LIST ------------------XX" << RESET << std::endl;
+
+	struct timeval start2, end2;
+	
+	gettimeofday(&start2, NULL);
+
+	PmergeMe pm2(ac, av);
+	std::list<int> seqList;
+	pm2.parsing(ac, av, seqList);
+	std::cout << std::endl;
+	pm2.printContainer(seqList);
+	pm2.divideIntoPairsList(seqList);
+	pm2.insertSortedMinMaxList();
+	pm2.FordJList();
+//	pm2.clearInitialVector();
+//	pm2.groupMinArray();
+//	pm2.processGroups();
+
+	gettimeofday(&end2, NULL);
+	std::cout << std::endl;
+	pm2.printElapsedTime(start2, end2);
+	std::cout << std::endl;
+
 	return (0);
 }

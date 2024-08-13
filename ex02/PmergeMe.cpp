@@ -6,7 +6,7 @@
 /*   By: lmedrano <lmedrano@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/08 13:51:35 by lmedrano          #+#    #+#             */
-/*   Updated: 2024/08/12 17:23:13 by lmedrano         ###   ########.fr       */
+/*   Updated: 2024/08/13 18:30:51 by lmedrano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,18 @@ PmergeMe& PmergeMe::operator=(const PmergeMe& copy)
 	return (*this);
 }
 
+//GETTERS
+
+const std::vector<std::pair<int, int> >& PmergeMe::getPairVector() const
+{
+    return (_pair);
+}
+
+const std::list<std::pair<int, int> >& PmergeMe::getPairList() const
+{
+    return (_pairL);
+}
+
 //methods
 void	PmergeMe::printElapsedTime(struct timeval start, struct timeval end) const
 {
@@ -111,19 +123,6 @@ void	PmergeMe::printElapsedTime(struct timeval start, struct timeval end) const
 	long useconds = end.tv_usec - start.tv_usec;
 	double elapsed = seconds + useconds*1e-6;
 	std::cout << PURPLE << "Time spent: " << std::fixed << std::setprecision(6) << elapsed << " secs" << RESET << std::endl;
-}
-
-void	PmergeMe::printPairs() const
-{
-	if (_pair.empty())
-		std::cout << RED << "EMPTY PAIRS" << RESET << std::endl;
-	else
-	{
-		for (std::vector<std::pair<int, int> >::const_iterator iter = _pair.begin(); iter != _pair.end(); iter++)
-		{
-			std::cout << GREEN << "Pair is: " << iter->first << " , " << iter->second << RESET << std::endl;
-		}
-	}
 }
 
 bool PmergeMe::checkNumber(const std::string& args) const
@@ -193,56 +192,47 @@ bool PmergeMe::itTakesTwo(const std::string& input) const
 	return (false);
 }
 
-//GETTERS
-
-const std::vector<int>& PmergeMe::getSequence() const
+void	PmergeMe::divideIntoPairsVec(std::vector<int> &container)
 {
-	return (_sequence);
-}
-
-const std::vector<int>& PmergeMe::getMax() const
-{
-	return (_max);
-}
-
-const std::vector<int>& PmergeMe::getMin() const
-{
-	return (_min);
-}
-
-void	PmergeMe::parsing(int ac, char **av)
-{
-	if (ac > 2)
+	for (size_t i = 0; i + 1 < container.size(); i += 2)
 	{
-		for (int i = 1; i < ac; i++)
+		_pair.push_back(std::make_pair(container[i], container[i + 1]));
+	}
+	if (container.size() % 2 != 0)
+	{
+		_pair.push_back(std::make_pair(container.back(), -1));
+	}
+	// print pairs x debug
+	std::cout << "pairs" <<std::endl;
+	for (std::vector<std::pair<int, int> >::const_iterator it = _pair.begin(); it != _pair.end(); ++it) {
+       		std::cout << "(" << it->first << ", " << it->second << ")" << std::endl;
+    	}
+}
+
+void	PmergeMe::divideIntoPairsList(std::list<int> &container)
+{
+	std::list<int>::iterator iter = container.begin();
+	while (iter != container.end())
+	{
+		std::list<int>::iterator iter2 = iter;
+		iter2++;
+		if (iter2 != container.end())
 		{
-			std::string	arg = av[i];
-			_sequence.push_back(std::atoi(arg.c_str()));
+			_pairL.push_back(std::make_pair(*iter, *iter2));
+			iter = iter2;
+			iter++;
+		}
+		else
+		{
+			_pairL.push_back(std::make_pair(*iter, -1));
+			iter++;
 		}
 	}
-	else if (ac == 2)
-	{
-		
-		std::string		arg = av[1];
-		std::istringstream	iss(arg);
-		std::string		token;
-		while (iss >> token)
-		{
-			_sequence.push_back(std::atoi(token.c_str()));
-		}
-	}
-}
-
-void	PmergeMe::divideIntoPairs()
-{
-	for (size_t i = 0; i + 1 < _sequence.size(); i += 2)
-	{
-		_pair.push_back(std::make_pair(_sequence[i], _sequence[i + 1]));
-	}
-	if (_sequence.size() % 2 != 0)
-	{
-		_pair.push_back(std::make_pair(_sequence.back(), -1));
-	}
+	// print pairs x debug
+	std::cout << "pairs" <<std::endl;
+	for (std::list<std::pair<int, int> >::const_iterator it = _pairL.begin(); it != _pairL.end(); ++it) {
+       		std::cout << "(" << it->first << ", " << it->second << ")" << std::endl;
+    	}
 }
 
 std::pair<int, int>	PmergeMe::sortMinMaxPair(const std::pair<int, int>& pair) const
@@ -252,99 +242,59 @@ std::pair<int, int>	PmergeMe::sortMinMaxPair(const std::pair<int, int>& pair) co
 	return (pair);
 }
 
-void	PmergeMe::insertSortedMinMax()
+void	PmergeMe::insertSortedMinMaxVec()
 {
 	for (std::vector<std::pair<int, int> >::iterator iter = _pair.begin(); iter != _pair.end(); iter++)
 		*iter = sortMinMaxPair(*iter);
+	// print pairs x debug
+	std::cout << "pairs sorted" <<std::endl;
+	for (std::vector<std::pair<int, int> >::const_iterator it = _pair.begin(); it != _pair.end(); ++it) {
+       		std::cout << "(" << it->first << ", " << it->second << ")" << std::endl;
+    	}
 }
 
-void	PmergeMe::maxArray()
+void	PmergeMe::insertSortedMinMaxList()
 {
-	while (true)
-	{
-		int smallestMax = std::numeric_limits<int>::max();
-		std::vector<std::pair<int, int> >::iterator pairIter = _pair.end();
-		
-		for (std::vector<std::pair<int, int> >::iterator iter = _pair.begin(); iter != _pair.end(); iter++)
-		{
-			int currentMax = iter->second;
-			if (currentMax == -1)
-				continue ;
-			if (currentMax < smallestMax)
-			{
-				smallestMax = currentMax;
-				pairIter = iter;
-			}
-		}
-		if (pairIter == _pair.end())
-			break ;
-		_max.push_back(smallestMax);
-		pairIter->second = -1;
-	}
+	for (std::list<std::pair<int, int> >::iterator iter = _pairL.begin(); iter != _pairL.end(); iter++)
+		*iter = sortMinMaxPair(*iter);
+	// print pairs x debug
+	std::cout << "pairs sorted" <<std::endl;
+	for (std::list<std::pair<int, int> >::const_iterator it = _pairL.begin(); it != _pairL.end(); ++it) {
+       		std::cout << "(" << it->first << ", " << it->second << ")" << std::endl;
+    	}
 }
 
-void	PmergeMe::insertMinInMaxArray()
+void	PmergeMe::FordJVec()
 {
-	if (_pair.empty())
-		return ;
-	int smallestMax = std::numeric_limits<int>::max();
-	int min = std::numeric_limits<int>::max();
-	std::vector<std::pair<int, int> >::iterator pairIter;
-	std::vector<std::pair<int, int> >::iterator iter;
-
-	for (iter = _pair.begin(); iter != _pair.end(); iter++)
+	insertMinInMaxArray(_pair);
+	//debug minmax
+	std::cout << "min in max to max array" <<std::endl;
+	for (std::vector<int>::iterator iter = _max.begin(); iter != _max.end(); iter++)
 	{
-		int currentMax = std::max(iter->first, iter->second);
-		int currentMin = std::min(iter->first, iter->second);
-
-		if (currentMin == -1 && currentMax == -1)
-			continue ;
-		if (currentMax < smallestMax && currentMin != -1)
-		{
-			smallestMax = currentMax;
-			min = currentMin;
-			pairIter = iter;
-		}
-		else if (currentMax == smallestMax)
-		{
-			if (currentMin < min && currentMin != -1)
-			{
-				min = std::min(min, currentMin);
-				pairIter = iter;
-			}
-		}
+		std::cout << *iter << " ";
 	}
-	_max.push_back(min);
-	_max.push_back(smallestMax);
-	_pair.erase(pairIter);
+	std::cout << std::endl;
+	maxArray(_pair, _max);
+	minArray(_pair, _min);
 }
 
-void	PmergeMe::minArray()
+void	PmergeMe::FordJList()
 {
-	std::vector<std::pair<int, int> >::const_iterator iter;
-	for (iter = _pair.begin(); iter != _pair.end(); iter++)
+	insertMinInMaxArray(_pairL);
+	//debug minmax
+	std::cout << "min in max to max array" <<std::endl;
+	for (std::list<int>::iterator iter = _maxL.begin(); iter != _maxL.end(); iter++)
 	{
-		if (iter->first != -1)
-			_min.push_back(iter->first);
+		std::cout << *iter << " ";
 	}
+	std::cout << std::endl;
+	maxArray(_pairL, _maxL);
+	minArray(_pairL, _minL);
 }
 
 void	PmergeMe::clearInitialVector()
 {
 	_pair.clear();
-}
-
-void	PmergeMe::printMinMaxArrays()
-{
-	std::cout << "Max" << std::endl;
-	for (std::vector<int>::const_iterator iter = _max.begin(); iter != _max.end(); iter++)
-		std::cout << *iter << " ";
-	std::cout << RESET << std::endl;
-
-	std::cout << "Min" << std::endl;
-	for (std::vector<int>::const_iterator iter = _min.begin(); iter != _min.end(); iter++)
-		std::cout << *iter << " ";
-	std::cout << RESET << std::endl;
 }
 
 void PmergeMe::groupMinArray()
@@ -377,19 +327,6 @@ void PmergeMe::groupMinArray()
 		groupSize = nextPowerOfTwo - prevGroupSize;
 	}
 
-}
-
-void PmergeMe::printMinGrouped() {
-    for (std::vector<std::vector<int> >::const_iterator gIter = _powerOfTwo.begin(); gIter != _powerOfTwo.end(); ++gIter) {
-        printContMin(*gIter);
-    }
-}
-
-void PmergeMe::printContMin(const std::vector<int>& container) {
-    for (std::vector<int>::const_iterator iter = container.begin(); iter != container.end(); ++iter) {
-        std::cout << *iter << " ";
-    }
-    std::cout << std::endl;
 }
 
 std::vector<int>::iterator PmergeMe::binarySearch(int val)
@@ -428,4 +365,4 @@ void PmergeMe::processGroups()
 		std::cout << *it << " ";
 	}
 	std::cout << RESET << std::endl;
-}
+ }
