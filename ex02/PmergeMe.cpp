@@ -6,7 +6,7 @@
 /*   By: lmedrano <lmedrano@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/08 13:51:35 by lmedrano          #+#    #+#             */
-/*   Updated: 2024/08/13 18:30:51 by lmedrano         ###   ########.fr       */
+/*   Updated: 2024/08/13 19:30:13 by lmedrano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -264,7 +264,7 @@ void	PmergeMe::insertSortedMinMaxList()
     	}
 }
 
-void	PmergeMe::FordJVec()
+void	PmergeMe::CreateVec()
 {
 	insertMinInMaxArray(_pair);
 	//debug minmax
@@ -276,9 +276,11 @@ void	PmergeMe::FordJVec()
 	std::cout << std::endl;
 	maxArray(_pair, _max);
 	minArray(_pair, _min);
+	std::vector<int> currentGroup;
+	groupMinArray(_powerOfTwo, _min, currentGroup);
 }
 
-void	PmergeMe::FordJList()
+void	PmergeMe::CreateList()
 {
 	insertMinInMaxArray(_pairL);
 	//debug minmax
@@ -290,79 +292,16 @@ void	PmergeMe::FordJList()
 	std::cout << std::endl;
 	maxArray(_pairL, _maxL);
 	minArray(_pairL, _minL);
+	std::list<int> currentGroup;
+	groupMinArray(_powerOfTwoL, _minL, currentGroup);
 }
 
-void	PmergeMe::clearInitialVector()
+void	PmergeMe::processGroupsVec()
 {
-	_pair.clear();
+	processGroups(_powerOfTwo, _max);
 }
 
-void PmergeMe::groupMinArray()
+void	PmergeMe::processGroupsList()
 {
-	_powerOfTwo.clear();
-
-	std::vector<int>::iterator start = _min.begin();
-	std::vector<int>::iterator end = _min.end();
-	size_t	nextPowerOfTwo = 1;
-	size_t	prevGroupSize = 1;
-	size_t	groupSize = 1;
-	
-	while (start != end)
-	{
-		std::vector<int> currentGroup;
-		std::vector<int>::iterator groupEnd = start;
-		
-		std::advance(groupEnd, std::min(groupSize, static_cast<size_t>(std::distance(start, end))));
-		for (; start != groupEnd; start++)
-			currentGroup.push_back(*start);
-
-		if (currentGroup.size() < groupSize)
-		{
-			while (currentGroup.size() < groupSize)
-				currentGroup.push_back(-1);
-		}
-		_powerOfTwo.push_back(currentGroup);
-		nextPowerOfTwo *= 2;
-		prevGroupSize = currentGroup.size();
-		groupSize = nextPowerOfTwo - prevGroupSize;
-	}
-
+	processGroups(_powerOfTwoL, _maxL);
 }
-
-std::vector<int>::iterator PmergeMe::binarySearch(int val)
-{
-	std::vector<int>::iterator left = _max.begin();
-	std::vector<int>::iterator right = _max.end();
-
-	while (left < right)
-	{
-		std::vector<int>::iterator mid = left + (right - left) / 2;
-		if (*mid < val)
-			left = mid + 1;
-		else
-			right = mid;
-	}
-	return (left);
-}
-
-void PmergeMe::processGroups()
-{
-	for(std::vector<std::vector<int> >::const_iterator gIter = _powerOfTwo.begin(); gIter != _powerOfTwo.end(); gIter++)
-	{
-		const std::vector<int>& group = *gIter;
-		for (std::vector<int>::const_reverse_iterator rIter = group.rbegin(); rIter != group.rend(); rIter++)
-		{
-			int val = *rIter;
-			if (val == -1)
-				continue ;
-			std::vector<int>::iterator pos = binarySearch(val);
-			_max.insert(pos, val);
-		}
-	}
-	std::cout << PURPLE << "After:   ";
-	for (std::vector<int>::const_iterator it = _max.begin(); it != _max.end(); ++it)
-	{
-		std::cout << *it << " ";
-	}
-	std::cout << RESET << std::endl;
- }

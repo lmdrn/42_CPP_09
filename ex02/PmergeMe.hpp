@@ -90,20 +90,26 @@ class	PmergeMe
 		// MAX ARRAY
 		template <typename Container>
 		void					insertMinInMaxArray(Container &container);
-		void					FordJVec();
-		void					FordJList();
+		void					CreateVec();
+		void					CreateList();
 		template <typename ContPair, typename ContMax>
 		void					maxArray(ContPair &contPair, ContMax &maxArray);
 
 		//MIN ARRAY
 		template <typename ContPair, typename ContMin>
 		void					minArray(ContPair &contPair, ContMin &minArray);
-		void					clearInitialVector();
+		template <typename Container>
+		void					clearInitialVector(Container &container);
 
 		// FORD JOHNSON + BINARY SEARCH + INSERT MIN TO MAX ARRAY
-		void					groupMinArray();
-		std::vector<int>::iterator		binarySearch(int val);
-		void					processGroups();
+		template <typename ContPower, typename ContMin>
+		void 					groupMinArray(ContPower &power, ContMin &min, ContMin &currentGroup);
+		template <typename Container>
+		typename Container::iterator 		binarySearch(int val, Container &container);
+		void					processGroupsVec();
+		void					processGroupsList();
+		template <typename ContPower, typename ContMax>
+		void					processGroups(ContPower &power, ContMax &max);
 
 };
 
@@ -261,5 +267,105 @@ void	PmergeMe::minArray(ContPair &contPair, ContMin &minArray)
 
 template <typename ContPair, typename ContMin>
 void	minArray(ContPair &contPair, ContMin &minArray);
+
+template <typename Container>
+void	PmergeMe::clearInitialVector(Container &container)
+{
+	container.clear();
+}
+
+template <typename Container>
+void	clearInitialVector(Container &container);
+
+template <typename ContPower, typename ContMin>
+void PmergeMe::groupMinArray(ContPower &power, ContMin &min, ContMin &currentGroup)
+{
+	power.clear();
+
+	typename ContMin::iterator start = min.begin();
+	typename ContMin::iterator end = min.end();
+	size_t	nextPowerOfTwo = 1;
+	size_t	prevGroupSize = 1;
+	size_t	groupSize = 1;
+	
+	while (start != end)
+	{
+		currentGroup.clear();
+		typename ContMin::iterator groupEnd = start;
+		
+		std::advance(groupEnd, std::min(groupSize, static_cast<size_t>(std::distance(start, end))));
+		for (; start != groupEnd; start++)
+			currentGroup.push_back(*start);
+
+		if (currentGroup.size() < groupSize)
+		{
+			while (currentGroup.size() < groupSize)
+				currentGroup.push_back(-1);
+		}
+		power.push_back(currentGroup);
+		nextPowerOfTwo *= 2;
+		prevGroupSize = currentGroup.size();
+		groupSize = nextPowerOfTwo - prevGroupSize;
+		// debug_start
+		std::cout << "Group: ";
+		for (typename ContMin::const_iterator it = currentGroup.begin(); it != currentGroup.end(); ++it) {
+		    std::cout << *it << " ";
+		}
+		std::cout << std::endl;
+		// debug_end
+	}
+
+}
+
+template <typename ContPower, typename ContMin>
+void groupMinArray(ContPower &power, ContMin &min, ContMin &currentGroup);
+
+template <typename Container>
+typename Container::iterator PmergeMe::binarySearch(int val, Container &container)
+{
+	typename Container::iterator left = container.begin();
+	typename Container::iterator right = container.end();
+
+	while (left < right)
+	{
+		typename Container::iterator mid = left + (right - left) / 2;
+		if (*mid < val)
+			left = mid + 1;
+		else
+			right = mid;
+	}
+	return (left);
+}
+
+template <typename Container>
+typename Container::iterator binarySearch(int val, Container &container);
+
+
+template <typename ContPower, typename ContMax>
+void PmergeMe::processGroups(ContPower &power, ContMax &max)
+{
+	for(typename ContPower::const_iterator gIter = power.begin(); gIter != power.end(); gIter++)
+	{
+		ContMax group;
+		group = *gIter;
+		for (typename ContMax::const_reverse_iterator rIter = group.rbegin(); rIter != group.rend(); rIter++)
+		{
+			int val = *rIter;
+			if (val == -1)
+				continue ;
+			typename ContMax::iterator pos = binarySearch(val, max);
+			max.insert(pos, val);
+		}
+	}
+	std::cout << PURPLE << "After:   ";
+	for (typename ContMax::const_iterator it = max.begin(); it != max.end(); ++it)
+	{
+		std::cout << *it << " ";
+	}
+	std::cout << RESET << std::endl;
+ }
+
+template <typename ContPower, typename ContMax>
+void	processGroups(ContPower &power, ContMax &max);
 
 #endif
