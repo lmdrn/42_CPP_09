@@ -6,7 +6,7 @@
 /*   By: lmedrano <lmedrano@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 15:46:33 by lmedrano          #+#    #+#             */
-/*   Updated: 2024/07/23 12:22:29 by lmedrano         ###   ########.fr       */
+/*   Updated: 2024/08/14 08:39:50 by lmedrano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,10 +158,6 @@ void	BitCoinExchange::createMap(std::string line, std::size_t symbol)
 	{
 		std::cout << RED << "ERROR: bad input => " << newVal << RESET << std::endl;
 	}
-	else
-	{
-			std::cout << GREEN << key << " => " << newVal << RESET << std::endl;
-	}
 }
 
 float	BitCoinExchange::findCorrectDate(const std::string& date)
@@ -208,7 +204,7 @@ void	BitCoinExchange::exchangeBtc(const std::string& fileArg)
 			}
 		}
 		else
-			std::cerr << RED << "ERROR: Bad format." << RESET << std::endl;
+			std::cerr << RED << "ERROR: bad format." << RESET << std::endl;
 	}
 	infile.close();
 }

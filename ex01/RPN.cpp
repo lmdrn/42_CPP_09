@@ -6,7 +6,7 @@
 /*   By: lmedrano <lmedrano@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/08 09:55:24 by lmedrano          #+#    #+#             */
-/*   Updated: 2024/08/08 11:46:06 by lmedrano         ###   ########.fr       */
+/*   Updated: 2024/08/14 08:27:31 by lmedrano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ void	RPN::calculate(std::string args)
 			{		
 				if (polishOp.size() < 2)
 				{
-					std::cerr << RED << "ERROR: Need at least two numbers to calculate" << RESET << std::endl;
+					std::cerr << RED << "ERROR: Need at least two consecutive numbers to calculate" << RESET << std::endl;
 					return ;
 				}
 				int	nbr2 = polishOp.top();
