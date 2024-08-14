@@ -6,7 +6,7 @@
 /*   By: lmedrano <lmedrano@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/09 13:59:32 by lmedrano          #+#    #+#             */
-/*   Updated: 2024/08/13 19:23:02 by lmedrano         ###   ########.fr       */
+/*   Updated: 2024/08/14 08:22:01 by lmedrano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ int main(int ac, char **av)
 
 	PmergeMe pm(ac, av);
 	std::vector<int> sequence;
+
 	pm.parsing(ac, av, sequence);
 
 	std::cout << std::endl;
@@ -37,9 +38,6 @@ int main(int ac, char **av)
 	pm.insertSortedMinMaxVec();
 	pm.CreateVec();
 	pm.clearInitialVector(sequence);
-	//debug_start
-	pm.printContainer(sequence);
-	//debug_end
 	pm.processGroupsVec();
 
 	gettimeofday(&end, NULL);
@@ -55,6 +53,7 @@ int main(int ac, char **av)
 
 	PmergeMe pm2(ac, av);
 	std::list<int> seqList;
+
 	pm2.parsing(ac, av, seqList);
 
 	std::cout << std::endl;
@@ -64,9 +63,6 @@ int main(int ac, char **av)
 	pm2.insertSortedMinMaxList();
 	pm2.CreateList();
 	pm2.clearInitialVector(seqList);
-	//debug_start
-	pm2.printContainer(seqList);
-	//debug_end
 	pm2.processGroupsList();
 
 	gettimeofday(&end2, NULL);

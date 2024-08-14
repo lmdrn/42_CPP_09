@@ -6,7 +6,7 @@
 /*   By: lmedrano <lmedrano@student.42lausanne.ch>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/08 13:51:35 by lmedrano          #+#    #+#             */
-/*   Updated: 2024/08/13 19:52:39 by lmedrano         ###   ########.fr       */
+/*   Updated: 2024/08/14 08:20:15 by lmedrano         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,6 @@ PmergeMe::PmergeMe(int ac, char **av)
 	if (ac > 2)
 	{
 		std::set<int>		doublonChecker;
-		bool okay = true;
 		for (int i = 1; i < ac; i++)
 		{
 			std::string token = av[i];
@@ -64,12 +63,11 @@ PmergeMe::PmergeMe(int ac, char **av)
 				std::cerr << RED << "ERROR: Invalid Number! Insert a valid sequence" << RESET << std::endl;
 				exit(-1);
 			}
-			okay = checkUnique(token, doublonChecker);
-		}
-		if (okay == false)
-		{
-			std::cerr << RED << "ERROR: Doublons! Insert valid number sequence." << RESET << std::endl;
-			exit(-1);
+			if (checkUnique(token, doublonChecker) == false)
+			{
+				std::cerr << RED << "ERROR: Doublons! Insert valid number sequence." << RESET << std::endl;
+				exit(-1);
+			}
 		}
 	}
 	else
@@ -104,19 +102,7 @@ PmergeMe& PmergeMe::operator=(const PmergeMe& copy)
 	return (*this);
 }
 
-//GETTERS
-
-const std::vector<std::pair<int, int> >& PmergeMe::getPairVector() const
-{
-    return (_pair);
-}
-
-const std::list<std::pair<int, int> >& PmergeMe::getPairList() const
-{
-    return (_pairL);
-}
-
-//methods
+//TIME
 void	PmergeMe::printElapsedTime(struct timeval start, struct timeval end) const
 {
 	long seconds = end.tv_sec - start.tv_sec;
@@ -125,6 +111,7 @@ void	PmergeMe::printElapsedTime(struct timeval start, struct timeval end) const
 	std::cout << PURPLE << "Time spent: " << std::fixed << std::setprecision(6) << elapsed << " secs" << RESET << std::endl;
 }
 
+//PARSING
 bool PmergeMe::checkNumber(const std::string& args) const
 {
 	if (args.empty())
@@ -192,6 +179,7 @@ bool PmergeMe::itTakesTwo(const std::string& input) const
 	return (false);
 }
 
+//FCT TO DIVIDE THE VECTOR INTO PAIRS
 void	PmergeMe::divideIntoPairsVec(std::vector<int> &container)
 {
 	for (size_t i = 0; i + 1 < container.size(); i += 2)
@@ -202,13 +190,9 @@ void	PmergeMe::divideIntoPairsVec(std::vector<int> &container)
 	{
 		_pair.push_back(std::make_pair(container.back(), -1));
 	}
-	// print pairs x debug
-	std::cout << "pairs" <<std::endl;
-	for (std::vector<std::pair<int, int> >::const_iterator it = _pair.begin(); it != _pair.end(); ++it) {
-       		std::cout << "(" << it->first << ", " << it->second << ")" << std::endl;
-    	}
 }
 
+//FCT TO DIVIDE THE LIST INTO PAIRS
 void	PmergeMe::divideIntoPairsList(std::list<int> &container)
 {
 	std::list<int>::iterator iter = container.begin();
@@ -228,13 +212,9 @@ void	PmergeMe::divideIntoPairsList(std::list<int> &container)
 			iter++;
 		}
 	}
-	// print pairs x debug
-	std::cout << "pairs" <<std::endl;
-	for (std::list<std::pair<int, int> >::const_iterator it = _pairL.begin(); it != _pairL.end(); ++it) {
-       		std::cout << "(" << it->first << ", " << it->second << ")" << std::endl;
-    	}
 }
 
+//FCT TO SORT EACH PAIR
 std::pair<int, int>	PmergeMe::sortMinMaxPair(const std::pair<int, int>& pair) const
 {
 	if (pair.first > pair.second && pair.second != -1)
@@ -242,65 +222,51 @@ std::pair<int, int>	PmergeMe::sortMinMaxPair(const std::pair<int, int>& pair) co
 	return (pair);
 }
 
+
+//FCT TO SORT EACH PAIR IN VECTOR
 void	PmergeMe::insertSortedMinMaxVec()
 {
 	for (std::vector<std::pair<int, int> >::iterator iter = _pair.begin(); iter != _pair.end(); iter++)
 		*iter = sortMinMaxPair(*iter);
-	// print pairs x debug
-	std::cout << "pairs sorted" <<std::endl;
-	for (std::vector<std::pair<int, int> >::const_iterator it = _pair.begin(); it != _pair.end(); ++it) {
-       		std::cout << "(" << it->first << ", " << it->second << ")" << std::endl;
-    	}
 }
 
+//FCT TO SORT EACH PAIR IN LIST
 void	PmergeMe::insertSortedMinMaxList()
 {
 	for (std::list<std::pair<int, int> >::iterator iter = _pairL.begin(); iter != _pairL.end(); iter++)
 		*iter = sortMinMaxPair(*iter);
-	// print pairs x debug
-	std::cout << "pairs sorted" <<std::endl;
-	for (std::list<std::pair<int, int> >::const_iterator it = _pairL.begin(); it != _pairL.end(); ++it) {
-       		std::cout << "(" << it->first << ", " << it->second << ")" << std::endl;
-    	}
 }
 
+
+//FCT TO DIVIDE VECTOR INTO A MAX ARRAY AND MIN ARRAY
 void	PmergeMe::CreateVec()
 {
 	insertMinInMaxArray(_pair);
-	//debug minmax
-	std::cout << "min in max to max array" <<std::endl;
-	for (std::vector<int>::iterator iter = _max.begin(); iter != _max.end(); iter++)
-	{
-		std::cout << *iter << " ";
-	}
-	std::cout << std::endl;
 	maxArray(_pair, _max);
 	minArray(_pair, _min);
+
 	std::vector<int> currentGroup;
 	groupMinArray(_powerOfTwo, _min, currentGroup);
 }
 
+//FCT TO DIVIDE LIST INTO A MAX ARRAY AND MIN ARRAY
 void	PmergeMe::CreateList()
 {
 	insertMinInMaxArray(_pairL);
-	//debug minmax
-	std::cout << "min in max to max array" <<std::endl;
-	for (std::list<int>::iterator iter = _maxL.begin(); iter != _maxL.end(); iter++)
-	{
-		std::cout << *iter << " ";
-	}
-	std::cout << std::endl;
 	maxArray(_pairL, _maxL);
 	minArray(_pairL, _minL);
+
 	std::list<int> currentGroup;
 	groupMinArray(_powerOfTwoL, _minL, currentGroup);
 }
 
+//FCT TO INSERT MIN ARRAY INTO MAX ARRAY WITH FORD JOHNSON FOR VECTOR
 void	PmergeMe::processGroupsVec()
 {
 	processGroups(_powerOfTwo, _max);
 }
 
+//FCT TO INSERT MIN ARRAY INTO MAX ARRAY WITH FORD JOHNSON FOR LIST
 void	PmergeMe::processGroupsList()
 {
 	processGroups(_powerOfTwoL, _maxL);

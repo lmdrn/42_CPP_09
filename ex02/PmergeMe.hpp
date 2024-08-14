@@ -39,13 +39,13 @@
 class	PmergeMe
 {
 	private:
-		//std::vector<int> 			_sequence;
+		//VECTORS
 		std::vector<std::pair<int, int> >	_pair;
 		std::vector<int>			_max;
 		std::vector<int>			_min;
 		std::vector<std::vector<int> >		_powerOfTwo;
 
-		//std::list<int> 				_sequenceL;
+		//LISTS
 		std::list<std::pair<int, int> >		_pairL;
 		std::list<int>				_maxL;
 		std::list<int>				_minL;
@@ -63,11 +63,6 @@ class	PmergeMe
 		~PmergeMe();
 		PmergeMe(const PmergeMe& copy);
 		PmergeMe& operator=(const PmergeMe& copy);
-
-		//GETTERS
-		
-		const std::vector<std::pair<int, int> >& getPairVector() const;
-		const std::list<std::pair<int, int> >& getPairList() const;
 
 		//DEBUG
 		template <typename Container>
@@ -116,6 +111,7 @@ class	PmergeMe
 
 //TEMPLATES
 
+//FCT TO PRINT A CONTAINER
 template <typename Container>
 void	PmergeMe::printContainer(const Container& container)
 {
@@ -126,7 +122,7 @@ void	PmergeMe::printContainer(const Container& container)
 	}
 	else
 	{
-		std::cout << ORANGE << "Before:  "; 
+		std::cout << RED << "Before:  "; 
 		for (typename Container::const_iterator iter = container.begin(); iter != container.end(); iter++)
 		{
 			std::cout << *iter << " ";
@@ -138,6 +134,7 @@ void	PmergeMe::printContainer(const Container& container)
 template <typename Container>
 void					printContainer(const Container& container);
 
+//FCT TO PARSE MY AV PARAM INTO VECTOR OR LIST
 template <typename Container>
 void	PmergeMe::parsing(int ac, char **av, Container &container)
 {
@@ -165,6 +162,7 @@ void	PmergeMe::parsing(int ac, char **av, Container &container)
 template <typename Container>
 void	parsing(int ac, char **av, Container &container);
 
+//FCT TO INSERT MIN VALUE OF MAX VALUE INTO MAX ARRAY
 template <typename Container>
 void	PmergeMe::insertMinInMaxArray(Container &container)
 {
@@ -213,6 +211,7 @@ void	PmergeMe::insertMinInMaxArray(Container &container)
 template <typename Container>
 void	insertMinInMaxArray(Container &container);
 
+//FCT TO POPULATE AND SORT MAX ARRAY
 template <typename ContPair, typename ContMax>
 void	PmergeMe::maxArray(ContPair &contPair, ContMax &maxArray)
 {
@@ -237,17 +236,13 @@ void	PmergeMe::maxArray(ContPair &contPair, ContMax &maxArray)
 		maxArray.push_back(smallestMax);
 		pairIter->second = -1;
 	}
-	//debug
-	std::cout << "Max values: ";
-	for (typename ContMax::iterator it = maxArray.begin(); it != maxArray.end(); ++it) {
-		std::cout << *it << " ";
-	}
-	std::cout << std::endl;
 }
 
 template <typename ContPair, typename ContMax>
 void	maxArray(ContPair &contPair, ContMax &maxArray);
 
+
+//FCT TO POPULATE MIN ARRAY UNSORTED
 template <typename ContPair, typename ContMin>
 void	PmergeMe::minArray(ContPair &contPair, ContMin &minArray)
 {
@@ -257,17 +252,13 @@ void	PmergeMe::minArray(ContPair &contPair, ContMin &minArray)
 		if (iter->first != -1)
 			minArray.push_back(iter->first);
 	}
-	//debug
-	std::cout << "Min values: ";
-	for (typename ContMin::iterator it = minArray.begin(); it != minArray.end(); ++it) {
-		std::cout << *it << " ";
-	}
-	std::cout << std::endl;
 }
 
 template <typename ContPair, typename ContMin>
 void	minArray(ContPair &contPair, ContMin &minArray);
 
+
+//FCT TO CLEAR MY INITIAL VECTOR OR LIST 
 template <typename Container>
 void	PmergeMe::clearInitialVector(Container &container)
 {
@@ -277,6 +268,8 @@ void	PmergeMe::clearInitialVector(Container &container)
 template <typename Container>
 void	clearInitialVector(Container &container);
 
+
+//FCT TO GROUP MY MIN ARRAY ACCORDING TO POWER OF TWO
 template <typename ContPower, typename ContMin>
 void PmergeMe::groupMinArray(ContPower &power, ContMin &min, ContMin &currentGroup)
 {
@@ -306,13 +299,6 @@ void PmergeMe::groupMinArray(ContPower &power, ContMin &min, ContMin &currentGro
 		nextPowerOfTwo *= 2;
 		prevGroupSize = currentGroup.size();
 		groupSize = nextPowerOfTwo - prevGroupSize;
-		// debug_start
-		std::cout << "Group: ";
-		for (typename ContMin::const_iterator it = currentGroup.begin(); it != currentGroup.end(); ++it) {
-		    std::cout << *it << " ";
-		}
-		std::cout << std::endl;
-		// debug_end
 	}
 
 }
@@ -320,6 +306,7 @@ void PmergeMe::groupMinArray(ContPower &power, ContMin &min, ContMin &currentGro
 template <typename ContPower, typename ContMin>
 void groupMinArray(ContPower &power, ContMin &min, ContMin &currentGroup);
 
+//FCT TO INSERT EACH MIN VALUE INTO MAX ARRAY SORTED BY DOING A BINARY SEARCH
 template <typename ContPower, typename ContMax>
 void PmergeMe::processGroups(ContPower &power, ContMax &max)
 {
@@ -336,7 +323,7 @@ void PmergeMe::processGroups(ContPower &power, ContMax &max)
 			max.insert(pos, val);
 		}
 	}
-	std::cout << PURPLE << "After:   ";
+	std::cout << GREEN << "After:   ";
 	for (typename ContMax::const_iterator it = max.begin(); it != max.end(); ++it)
 	{
 		std::cout << *it << " ";
@@ -347,6 +334,7 @@ void PmergeMe::processGroups(ContPower &power, ContMax &max)
 template <typename ContPower, typename ContMax>
 void	processGroups(ContPower &power, ContMax &max);
 
+//FCT BINARY SEARCH (START FROM MIDDLE THEN GO LEFT OR RIGHT AND REDUCE POSSIBILITIES)
 template <typename Container>
 typename Container::iterator PmergeMe::binarySearch(Container &container, int val)
 {
